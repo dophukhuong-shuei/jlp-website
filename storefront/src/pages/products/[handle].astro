@@ -58,6 +58,23 @@ const discountPct =
             qua Zalo.
           </p>
           <LabelStrip item={item} full />
+          {item.skinTypes.length > 0 && (
+            <div class="chips">
+              {item.skinTypes.map((s) => (
+                <span class="chip">{s}</span>
+              ))}
+            </div>
+          )}
+          {item.attributes.length > 0 && (
+            <dl class="fields" style="margin-top:1rem;flex-direction:column;gap:.4rem">
+              {item.attributes.map((a) => (
+                <div class="field">
+                  <dt>{a.name}</dt>
+                  <dd>{a.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
       </div>
     </div>

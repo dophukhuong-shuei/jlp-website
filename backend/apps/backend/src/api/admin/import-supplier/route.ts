@@ -37,6 +37,43 @@ const CATEGORY_MAP: Record<string, string> = {
   "Hair Curly & Textured Products": "Chăm sóc tóc",
 };
 
+const SKIN_TYPE_VI: Record<string, string> = {
+  Combination: "Da hỗn hợp",
+  Oily: "Da dầu",
+  "All Skin Types": "Mọi loại da",
+  Dry: "Da khô",
+  Normal: "Da thường",
+};
+
+type AttributeEntry = { skinTypes: string[]; volumeLabel: string | null; others: { name: string; value: string }[] };
+
+// Đọc sheet "Product attributes" (Skin Type, Net Weight/Volume, Texture, Benefits...) nếu có, gộp theo SPU.
+function buildAttributesIndex(wb: XLSX.WorkBook): Map<string, AttributeEntry> {
+  const sheet = wb.Sheets["Product attributes"];
+  const index = new Map<string, AttributeEntry>();
+  if (!sheet) return index;
+  const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, { defval: null });
+  for (const r of rows) {
+    const spu = r.SPU;
+    const name = r["attribute name"];
+    const value = r["attribute value"];
+    if (!spu || !name || !value) continue;
+    if (!index.has(spu)) index.set(spu, { skinTypes: [], volumeLabel: null, others: [] });
+    const entry = index.get(spu)!;
+    if (name === "Skin Type") {
+      const vi = SKIN_TYPE_VI[value] || value;
+      if (!entry.skinTypes.includes(vi)) entry.skinTypes.push(vi);
+    } else if (name === "Net Weight (g)") {
+      entry.volumeLabel = `${value}g`;
+    } else if (name === "Net Volume (ml)") {
+      entry.volumeLabel = `${value}ml`;
+    } else {
+      entry.others.push({ name, value });
+    }
+  }
+  return index;
+}
+
 function slugify(s: string): string {
   return s
     .toLowerCase()
@@ -87,6 +124,7 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
   }
   const sheet = wb.Sheets["Product Information"] ?? wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, { defval: null });
+  const attributesIndex = buildAttributesIndex(wb);
 
   const bySpu = new Map<string, Record<string, any>[]>();
   for (const r of rows) {
@@ -138,6 +176,8 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
       };
     });
 
+    const attrs = attributesIndex.get(spu);
+
     const payload = {
       title,
       handle,
@@ -156,6 +196,9 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
         origin: "Nhật Bản",
         source: "supplier-import",
         source_spu: spu,
+        skin_type: attrs?.skinTypes.length ? attrs.skinTypes.join(",") : null,
+        volume_label: attrs?.volumeLabel ?? null,
+        attributes: attrs?.others.length ? JSON.stringify(attrs.others) : null,
       },
     };
 
@@ -163,7 +206,16 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
       await createProductsWorkflow(req.scope).run({ input: { products: [payload] } });
       results.push({ title, status: "created" });
     } catch (err) {
-      results.push({ title, status: "failed", error: (err as Error).message.slice(0, 300) });
+      // Dữ liệu nguồn đôi khi có 2 SPU khác nhau trùng Product Number — thử lại với hậu tố duy nhất.
+      const suffix = spu.slice(-6);
+      payload.handle = `${payload.handle}-${suffix}`;
+      payload.variants = payload.variants.map((v) => ({ ...v, sku: `${v.sku}-${suffix}` }));
+      try {
+        await createProductsWorkflow(req.scope).run({ input: { products: [payload] } });
+        results.push({ title, status: "created" });
+      } catch (err2) {
+        results.push({ title, status: "failed", error: (err2 as Error).message.slice(0, 300) });
+      }
     }
   }
 

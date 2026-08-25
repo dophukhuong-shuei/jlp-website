@@ -111,6 +111,8 @@ export type CatalogItem = {
   inStock: boolean;
   categories: { id: string; name: string; handle: string }[];
   createdAt: string;
+  skinTypes: string[];
+  attributes: { name: string; value: string }[];
 };
 
 export function toCatalogItem(product: MedusaProduct): CatalogItem {
@@ -138,7 +140,7 @@ export function toCatalogItem(product: MedusaProduct): CatalogItem {
     brand: str("brand"),
     ja: str("ja"),
     jan: str("jan"),
-    volume: str("volume") ?? variant?.title ?? null,
+    volume: str("volume_label") ?? str("volume") ?? variant?.title ?? null,
     origin: str("origin"),
     lot: str("lot"),
     cbmp: str("cbmp"),
@@ -150,5 +152,15 @@ export function toCatalogItem(product: MedusaProduct): CatalogItem {
     inStock: (variant as { inventory_quantity?: number } | undefined)?.inventory_quantity !== 0,
     categories: product.categories ?? [],
     createdAt: product.created_at,
+    skinTypes: str("skin_type")?.split(",").filter(Boolean) ?? [],
+    attributes: (() => {
+      const raw = meta.attributes;
+      if (typeof raw !== "string" || !raw) return [];
+      try {
+        return JSON.parse(raw) as { name: string; value: string }[];
+      } catch {
+        return [];
+      }
+    })(),
   };
 }

@@ -36,15 +36,15 @@ const categoryCards = await Promise.all(
         <div class="cap">
           <p class="eyebrow">Hàng nội địa Nhật · Nhập chính ngạch</p>
           <h1>Mỗi sản phẩm đều có mã JAN để đối chiếu</h1>
-          <a class="cta-primary" href="#kiem-tra">Xem cách kiểm tra hàng thật</a>
+          <a class="cta-primary" href="#verify">Xem cách kiểm tra hàng thật</a>
         </div>
       </div>
       <div class="campaign-side">
-        <a href="/khuyen-mai/">
+        <a href="/promotions/">
           {onSaleItems[0]?.thumbnail && <img src={onSaleItems[0].thumbnail} alt="" />}
           <span class="cap">Đang khuyến mãi</span>
         </a>
-        <a class="b" href="#moi-ve">
+        <a class="b" href="#new-arrivals">
           {newestItems[0]?.thumbnail && <img src={newestItems[0].thumbnail} alt="" />}
           <span class="cap">Hàng mới về tuần này</span>
         </a>
@@ -73,7 +73,7 @@ const categoryCards = await Promise.all(
     </div>
   </section>
 
-  <section class="block" id="danh-muc">
+  <section class="block" id="categories">
     <div class="wrap">
       <div class="sec-head">
         <h2>Danh mục</h2>
@@ -81,7 +81,7 @@ const categoryCards = await Promise.all(
       </div>
       <div class="grid">
         {categoryCards.map((c) => (
-          <a class="cat-card" href={`/danh-muc/${c.handle}/`}>
+          <a class="cat-card" href={`/categories/${c.handle}/`}>
             {c.thumbnail && <img src={c.thumbnail} alt={c.name} />}
             <div class="cat-label">
               <h3>{c.name}</h3>
@@ -93,11 +93,11 @@ const categoryCards = await Promise.all(
     </div>
   </section>
 
-  <section class="block" id="noi-bat">
+  <section class="block" id="featured">
     <div class="wrap">
       <div class="sec-head">
         <h2>Sản phẩm nổi bật</h2>
-        <a class="more" href="/danh-muc/trang-điểm/">Xem theo danh mục →</a>
+        <a class="more" href="/categories/trang-điểm/">Xem theo danh mục →</a>
       </div>
       <div class="grid">
         {featured.map((item) => (
@@ -112,7 +112,7 @@ const categoryCards = await Promise.all(
       <div class="wrap">
         <div class="sec-head">
           <h2>Đang khuyến mãi</h2>
-          <a class="more" href="/khuyen-mai/">Xem tất cả khuyến mãi →</a>
+          <a class="more" href="/promotions/">Xem tất cả khuyến mãi →</a>
         </div>
         <div class="grid">
           {onSaleItems.map((item) => (
@@ -131,13 +131,13 @@ const categoryCards = await Promise.all(
           <p class="eyebrow" style="color:color-mix(in srgb,#fff 70%,transparent)">Về {site.name}</p>
           <h2>Mỹ phẩm Nhật, tra cứu được nguồn gốc</h2>
           <p>{site.about}</p>
-          <a class="cta-primary" href="/gioi-thieu/">Xem trang giới thiệu</a>
+          <a class="cta-primary" href="/about/">Xem trang giới thiệu</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="moi-ve">
+  <section class="block" id="new-arrivals">
     <div class="wrap">
       <div class="sec-head">
         <h2>Hàng mới về</h2>
@@ -151,7 +151,7 @@ const categoryCards = await Promise.all(
     </div>
   </section>
 
-  <section class="block" id="kiem-tra">
+  <section class="block" id="verify">
     <div class="wrap">
       <div class="sec-head"><h2>Cách tự kiểm tra hàng thật</h2></div>
       <ol class="steps">

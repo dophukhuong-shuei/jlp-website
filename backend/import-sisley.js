@@ -39,6 +39,42 @@ const CATEGORY_MAP = {
 };
 const CATEGORY_NAMES = ["Dưỡng da", "Chống nắng", "Tẩy trang", "Trang điểm", "Dưỡng thể", "Chăm sóc tóc"];
 
+const SKIN_TYPE_VI = {
+  Combination: "Da hỗn hợp",
+  Oily: "Da dầu",
+  "All Skin Types": "Mọi loại da",
+  Dry: "Da khô",
+  Normal: "Da thường",
+};
+
+// Đọc sheet "Product attributes" — chứa Skin Type, Net Weight/Volume, Texture, Benefits...
+// gộp theo SPU để đính vào metadata sản phẩm.
+function buildAttributesIndex(wb) {
+  const sheet = wb.Sheets["Product attributes"];
+  const index = new Map();
+  if (!sheet) return index;
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval: null });
+  for (const r of rows) {
+    const spu = r.SPU;
+    const name = r["attribute name"];
+    const value = r["attribute value"];
+    if (!spu || !name || !value) continue;
+    if (!index.has(spu)) index.set(spu, { skinTypes: [], volumeLabel: null, others: [] });
+    const entry = index.get(spu);
+    if (name === "Skin Type") {
+      const vi = SKIN_TYPE_VI[value] || value;
+      if (!entry.skinTypes.includes(vi)) entry.skinTypes.push(vi);
+    } else if (name === "Net Weight (g)") {
+      entry.volumeLabel = `${value}g`;
+    } else if (name === "Net Volume (ml)") {
+      entry.volumeLabel = `${value}ml`;
+    } else {
+      entry.others.push({ name, value });
+    }
+  }
+  return index;
+}
+
 async function login() {
   const res = await fetch(`${BASE}/auth/user/emailpass`, {
     method: "POST",
@@ -101,6 +137,7 @@ async function main() {
 
   const wb = XLSX.readFile(XLSX_PATH);
   const rows = XLSX.utils.sheet_to_json(wb.Sheets["Product Information"], { defval: null });
+  const attributesIndex = buildAttributesIndex(wb);
 
   const bySpu = new Map();
   for (const r of rows) {
@@ -149,6 +186,8 @@ async function main() {
       };
     });
 
+    const attrs = attributesIndex.get(spu);
+
     const payload = {
       title,
       handle,
@@ -167,6 +206,9 @@ async function main() {
         origin: "Nhật Bản",
         source: "shein-jp-export",
         source_spu: spu,
+        skin_type: attrs?.skinTypes.length ? attrs.skinTypes.join(",") : null,
+        volume_label: attrs?.volumeLabel ?? null,
+        attributes: attrs?.others.length ? JSON.stringify(attrs.others) : null,
       },
     };
 

@@ -78,10 +78,10 @@ const CAT_ICONS: Record<string, string> = {
     <nav class="catstrip">
       <div class="wrap">
         {categories.map((c) => (
-          <a href={`/danh-muc/${c.handle}/`}><span class="ic">{CAT_ICONS[c.name] ?? "🏷️"}</span>{c.name}</a>
+          <a href={`/categories/${c.handle}/`}><span class="ic">{CAT_ICONS[c.name] ?? "🏷️"}</span>{c.name}</a>
         ))}
-        <a href="/khuyen-mai/"><span class="ic">🎁</span>Khuyến mãi</a>
-        <a href="/#moi-ve"><span class="ic">✨</span>Hàng mới</a>
+        <a href="/promotions/"><span class="ic">🎁</span>Khuyến mãi</a>
+        <a href="/#new-arrivals"><span class="ic">✨</span>Hàng mới</a>
       </div>
     </nav>
 
@@ -104,7 +104,7 @@ const CAT_ICONS: Record<string, string> = {
           <p class="note">
             {categories.map((c, i) => (
               <>
-                <a href={`/danh-muc/${c.handle}/`}>{c.name}</a>
+                <a href={`/categories/${c.handle}/`}>{c.name}</a>
                 {i < categories.length - 1 ? " · " : ""}
               </>
             ))}
@@ -115,7 +115,7 @@ const CAT_ICONS: Record<string, string> = {
           <p class="note">
             Mọi sản phẩm đều hiển thị mã JAN và số phiếu công bố sản phẩm mỹ phẩm. Bạn có thể quét mã vạch hoặc tra
             số công bố trên cổng thông tin của Cục Quản lý Dược để tự đối chiếu trước khi đặt.
-            <br /><a href="/gioi-thieu/">Xem trang giới thiệu →</a>
+            <br /><a href="/about/">Xem trang giới thiệu →</a>
           </p>
         </div>
       </div>
@@ -133,10 +133,10 @@ const CAT_ICONS: Record<string, string> = {
     <nav class="mnav">
       <div class="wrap row">
         <a href="/"><span class="icn">🏠</span>Trang chủ</a>
-        <a href="/#danh-muc"><span class="icn">📂</span>Danh mục</a>
-        <a href="/khuyen-mai/"><span class="icn">🎁</span>Khuyến mãi</a>
+        <a href="/#categories"><span class="icn">📂</span>Danh mục</a>
+        <a href="/promotions/"><span class="icn">🎁</span>Khuyến mãi</a>
         <a href={site.zaloUrl} target="_blank" rel="noopener"><span class="icn">💬</span>Zalo</a>
-        <a href="/gioi-thieu/"><span class="icn">ℹ️</span>Giới thiệu</a>
+        <a href="/about/"><span class="icn">ℹ️</span>Giới thiệu</a>
       </div>
     </nav>
 
@@ -198,7 +198,7 @@ const CAT_ICONS: Record<string, string> = {
               .map(function (p) {
                 const thumb = p.thumbnail ? '<img src="' + p.thumbnail + '" alt="" />' : "<span></span>";
                 return (
-                  '<a href="/san-pham/' + p.handle + '/">' + thumb + "<span>" + p.title + "</span>" +
+                  '<a href="/products/' + p.handle + '/">' + thumb + "<span>" + p.title + "</span>" +
                   '<span class="price">' + fmtPrice(p.price, p.currency) + "</span></a>"
                 );
               })
