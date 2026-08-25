@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JLP Việt Nam — Phác thảo template mới (tham khảo Hasaki/Guardian)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#14213a; --ink-soft:#3d4b66; --ink-faint:#7d8798;
+  --paper:#f5f6f3; --card:#fff; --beni:#b0303c; --beni-wash:#fbeced;
+  --seal:#2f6551; --ochre:#8a7551; --rule:#e3e5df;
+  --sale:#e5342f; --sale-wash:#fdeceb; --amber:#f0a020;
+  --font-display:"Fraunces",serif; --font-body:"Be Vietnam Pro",system-ui,sans-serif;
+  --font-label:"IBM Plex Mono",monospace; --radius:6px;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;margin:0;line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{width:min(100% - 2rem,1180px);margin-inline:auto}
+.note-banner{background:var(--ink);color:#fff;text-align:center;font-size:.78rem;padding:.5rem;font-family:var(--font-label)}
+
+/* utility top bar */
+.utility{background:var(--ink);color:#dfe3ec;font-size:.78rem}
+.utility .wrap{display:flex;justify-content:space-between;padding:.4rem 0;gap:1rem;flex-wrap:wrap}
+.utility span{display:inline-flex;align-items:center;gap:.35rem}
+
+/* header */
+.hdr{background:var(--card);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:30}
+.hdr .wrap{display:flex;align-items:center;gap:1.25rem;min-height:64px}
+.logo{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--ink);margin-right:.5rem;white-space:nowrap}
+.search{flex:1;display:flex;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:.5rem .9rem;gap:.5rem;align-items:center;max-width:520px}
+.search input{border:none;background:none;outline:none;font-size:.85rem;width:100%;color:var(--ink)}
+.hdr-icons{display:flex;align-items:center;gap:1.1rem;margin-left:auto}
+.hdr-icon{position:relative;font-size:1.15rem}
+.hdr-icon .badge{position:absolute;top:-6px;right:-9px;background:var(--sale);color:#fff;font-size:.6rem;font-weight:700;border-radius:999px;padding:1px 5px}
+.hdr-cta{background:var(--sale);color:#fff;font-size:.8rem;font-weight:600;padding:.5rem 1rem;border-radius:999px;white-space:nowrap}
+
+/* category icon strip */
+.catstrip{background:var(--card);border-bottom:1px solid var(--rule)}
+.catstrip .wrap{display:flex;gap:1.6rem;overflow-x:auto;padding:.9rem 0}
+.catstrip a{display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.72rem;color:var(--ink-soft);flex:0 0 auto;width:74px;text-align:center}
+.catstrip .ic{width:52px;height:52px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:1px solid var(--rule)}
+
+/* hero campaign */
+.hero{padding:1.4rem 0}
+.hero .wrap{display:grid;grid-template-columns:2fr 1fr;gap:1rem}
+.hero-main{position:relative;border-radius:var(--radius);overflow:hidden;min-height:280px;background:var(--ink);display:flex;align-items:center}
+.hero-main img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero-main .cap{position:relative;z-index:1;color:#fff;padding:2rem;max-width:26ch}
+.hero-main .eyebrow{font-family:var(--font-label);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#f3c6ca}
+.hero-main h1{font-size:clamp(1.6rem,3vw,2.3rem);color:#fff;margin:.5rem 0 .8rem}
+.hero-main .cta{display:inline-block;background:#fff;color:var(--ink);font-weight:600;font-size:.85rem;padding:.6rem 1.1rem;border-radius:999px;margin-top:.5rem}
+.hero-side{display:flex;flex-direction:column;gap:.7rem}
+.hero-side .card{position:relative;border-radius:var(--radius);overflow:hidden;flex:1;background:var(--seal);min-height:135px;display:flex;align-items:flex-end}
+.hero-side .card.b{background:var(--ochre)}
+.hero-side .card .cap{position:relative;z-index:1;color:#fff;padding:1rem;font-size:.85rem;font-weight:600}
+
+/* flash sale */
+.flash{padding:1.6rem 0 0}
+.flash-head{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+.flash-head h2{font-size:1.3rem;color:var(--sale)}
+.timer{display:flex;gap:.3rem;font-family:var(--font-label);font-weight:600}
+.timer span{background:var(--ink);color:#fff;border-radius:4px;padding:.25rem .5rem;font-size:.85rem}
+.flash-more{margin-left:auto;font-size:.8rem;color:var(--sale);font-weight:600}
+.flash-row{display:flex;gap:.9rem;overflow-x:auto;padding-bottom:.3rem}
+.fcard{flex:0 0 168px;background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden}
+.fcard .media{position:relative;aspect-ratio:1/1;background:var(--paper)}
+.fcard .media img{width:100%;height:100%;object-fit:cover}
+.fcard .pct{position:absolute;top:0;left:0;background:var(--sale);color:#fff;font-size:.75rem;font-weight:700;padding:.2rem .45rem;border-radius:0 0 6px 0}
+.fcard .body{padding:.6rem .65rem .75rem}
+.fcard .name{font-size:.74rem;color:var(--ink-soft);margin:0 0 .35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
+.fcard .now{color:var(--sale);font-weight:700;font-size:.95rem;font-family:var(--font-label)}
+.fcard .was{color:var(--ink-faint);text-decoration:line-through;font-size:.72rem;margin-left:.3rem;font-family:var(--font-label)}
+.fcard .prog{height:6px;background:var(--sale-wash);border-radius:999px;margin-top:.5rem;overflow:hidden}
+.fcard .prog i{display:block;height:100%;background:var(--sale)}
+.fcard .sold{font-size:.65rem;color:var(--ink-faint);margin-top:.25rem}
+
+/* trust strip — điểm khác biệt của JLP giữ lại */
+.trust{background:var(--ink);color:#fff;margin-top:1.8rem}
+.trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;padding:1.1rem 0}
+.trust .item{display:flex;gap:.6rem;align-items:center;font-size:.78rem}
+.trust .item b{display:block;font-size:.82rem}
+.trust .icn{font-size:1.3rem}
+
+/* danh mục ảnh */
+.section{padding:2rem 0 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
+.sec-head h2{font-size:1.3rem}
+.catgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem}
+.catgrid a{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:1/1;background:var(--paper)}
+.catgrid img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.catgrid .lbl{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgb(20 33 58/.78));display:flex;align-items:flex-end;padding:.6rem;color:#fff;font-size:.78rem;font-weight:600}
+
+/* bán chạy */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.pcard{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden}
+.pcard .media{position:relative;aspect-ratio:1/1;background:var(--paper)}
+.pcard .media img{width:100%;height:100%;object-fit:cover}
+.pcard .rank{position:absolute;top:.5rem;left:.5rem;background:var(--amber);color:#fff;font-size:.7rem;font-weight:700;padding:.15rem .45rem;border-radius:4px}
+.pcard .body{padding:.8rem}
+.pcard .brand{font-family:var(--font-label);font-size:.68rem;color:var(--ochre);letter-spacing:.06em;text-transform:uppercase}
+.pcard .name{font-size:.85rem;margin:.25rem 0 .4rem;min-height:2.4em}
+.pcard .now{color:var(--sale);font-weight:700;font-family:var(--font-label)}
+.pcard .stars{color:var(--amber);font-size:.75rem}
+.pcard .sold{font-size:.7rem;color:var(--ink-faint)}
+
+/* câu chuyện thương hiệu — giữ định vị cao cấp/tin cậy */
+.story{margin:2.4rem 0 0;background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.story img{width:100%;height:100%;object-fit:cover}
+.story .cap{padding:2rem}
+.story .eyebrow{font-family:var(--font-label);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.story h2{margin:.5rem 0 .7rem}
+.story p{color:var(--ink-soft);font-size:.9rem}
+
+.footer-note{margin:2.5rem 0 1rem;padding:1rem;background:var(--beni-wash);border-radius:var(--radius);font-size:.8rem;color:var(--ink-soft)}
+
+/* mobile bottom nav mock */
+.mnav{position:sticky;bottom:0;display:none;background:var(--card);border-top:1px solid var(--rule);z-index:30}
+.mnav .wrap{display:flex;justify-content:space-around;padding:.5rem 0}
+.mnav a{display:flex;flex-direction:column;align-items:center;gap:.15rem;font-size:.65rem;color:var(--ink-soft)}
+.mnav .icn{font-size:1.2rem}
+
+@media(max-width:900px){
+  .hero .wrap{grid-template-columns:1fr}
+  .hero-side{flex-direction:row}
+  .catgrid{grid-template-columns:repeat(3,1fr)}
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .story{grid-template-columns:1fr}
+  .trust .wrap{grid-template-columns:repeat(2,1fr)}
+  .search{display:none}
+  .mnav{display:block}
+  body{padding-bottom:56px}
+}
+</style>
+</head>
+<body>
+
+<div class="note-banner">PHÁC THẢO — không phải trang thật, chỉ để xem hướng thiết kế mới trước khi build lại toàn site</div>
+
+<div class="utility">
+  <div class="wrap">
+    <span>📞 Hotline 0912 345 678</span>
+    <span>🚚 Freeship nội thành từ 500k · Đổi trả 7 ngày</span>
+  </div>
+</div>
+
+<header class="hdr">
+  <div class="wrap">
+    <a class="logo" href="#">JLP</a>
+    <div class="search"><span>🔍</span><input placeholder="Tìm sản phẩm, thương hiệu..." /></div>
+    <div class="hdr-icons">
+      <span class="hdr-icon">💬</span>
+      <span class="hdr-icon">🛒<span class="badge">3</span></span>
+      <a class="hdr-cta" href="#">Chat Zalo</a>
+    </div>
+  </div>
+</header>
+
+<div class="catstrip">
+  <div class="wrap">
+    <a href="#"><span class="ic">🧴</span>Dưỡng da</a>
+    <a href="#"><span class="ic">☀️</span>Chống nắng</a>
+    <a href="#"><span class="ic">🧼</span>Tẩy trang</a>
+    <a href="#"><span class="ic">💄</span>Trang điểm</a>
+    <a href="#"><span class="ic">🧖</span>Dưỡng thể</a>
+    <a href="#"><span class="ic">💇</span>Chăm sóc tóc</a>
+    <a href="#"><span class="ic">🎁</span>Khuyến mãi</a>
+    <a href="#"><span class="ic">✨</span>Hàng mới</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-main">
+      <img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/fd/178702649306bdfda6b7c7d405602fac6196d063f9_square.jpg" alt="" />
+      <div class="cap">
+        <p class="eyebrow">Hàng nội địa Nhật · Tra cứu được nguồn gốc</p>
+        <h1>Mỗi sản phẩm đều có mã JAN để đối chiếu</h1>
+        <a class="cta" href="#">Xem cách kiểm tra hàng thật</a>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="card"><div class="cap">Sisley — Giảm đến 30%</div></div>
+      <div class="card b"><div class="cap">Hàng mới về tuần này</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="flash">
+  <div class="wrap">
+    <div class="flash-head">
+      <h2>⚡ Flash sale</h2>
+      <div class="timer"><span>01</span>:<span>47</span>:<span>32</span></div>
+      <a class="flash-more" href="#">Xem tất cả →</a>
+    </div>
+    <div class="flash-row">
+      <div class="fcard">
+        <div class="media"><span class="pct">-30%</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/fd/178702649306bdfda6b7c7d405602fac6196d063f9_square.jpg" alt="" /></div>
+        <div class="body">
+          <p class="name">Sisley Le Phyto Rouge Lipstick 3.4g</p>
+          <span class="now">1.129.000₫</span><span class="was">1.608.000₫</span>
+          <div class="prog"><i style="width:64%"></i></div>
+          <p class="sold">Đã bán 64%</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="media"><span class="pct">-18%</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/de/17870304708c5955da9ec5550feec4b39a1f661919_square.jpg" alt="" /></div>
+        <div class="body">
+          <p class="name">Foundation Brush Ultra-Soft</p>
+          <span class="now">1.349.000₫</span><span class="was">1.644.000₫</span>
+          <div class="prog"><i style="width:38%"></i></div>
+          <p class="sold">Đã bán 38%</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="media"><span class="pct">-25%</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/d4/1787030857c1aaf91034552cbf47187bc5c9b8e4f2_square.jpg" alt="" /></div>
+        <div class="body">
+          <p class="name">Sisley Eyeliner Brush Pro</p>
+          <span class="now">1.161.000₫</span><span class="was">1.548.000₫</span>
+          <div class="prog"><i style="width:81%"></i></div>
+          <p class="sold">Đã bán 81%</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="media"><span class="pct">-15%</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/9c/17870309910610a515f3312748d3a51fd68c4b1094_square.jpg" alt="" /></div>
+        <div class="body">
+          <p class="name">Gentle Brush Face &amp; Neck</p>
+          <span class="now">1.250.000₫</span><span class="was">1.471.000₫</span>
+          <div class="prog"><i style="width:22%"></i></div>
+          <p class="sold">Đã bán 22%</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="media"><span class="pct">-22%</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/3c/17870330948c5cd58539e34be3014574e68ac47718_square.jpg" alt="" /></div>
+        <div class="body">
+          <p class="name">Eyeshadow Smudge Brush</p>
+          <span class="now">1.282.000₫</span><span class="was">1.644.000₫</span>
+          <div class="prog"><i style="width:57%"></i></div>
+          <p class="sold">Đã bán 57%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <div class="item"><span class="icn">🔎</span><span><b>Tra mã JAN thật</b>Đối chiếu trên vỏ hộp</span></div>
+    <div class="item"><span class="icn">📄</span><span><b>Có phiếu công bố</b>Tra trên cổng Cục QL Dược</span></div>
+    <div class="item"><span class="icn">🚚</span><span><b>Giao 1–2 ngày</b>Nội thành TP.HCM</span></div>
+    <div class="item"><span class="icn">↩️</span><span><b>Đổi hàng lỗi</b>Trong 7 ngày</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><h2>Danh mục</h2><a href="#" style="color:var(--sale);font-size:.85rem;font-weight:600">Xem tất cả</a></div>
+    <div class="catgrid">
+      <a href="#"><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/fd/178702649306bdfda6b7c7d405602fac6196d063f9_square.jpg" /><span class="lbl">Trang điểm</span></a>
+      <a href="#"><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/de/17870304708c5955da9ec5550feec4b39a1f661919_square.jpg" /><span class="lbl">Dưỡng da</span></a>
+      <a href="#"><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/9c/17870309910610a515f3312748d3a51fd68c4b1094_square.jpg" /><span class="lbl">Tẩy trang</span></a>
+      <a href="#"><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/d4/1787030857c1aaf91034552cbf47187bc5c9b8e4f2_square.jpg" /><span class="lbl">Dưỡng thể</span></a>
+      <a href="#"><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/3c/17870330948c5cd58539e34be3014574e68ac47718_square.jpg" /><span class="lbl">Chăm sóc tóc</span></a>
+      <a href="#" style="display:flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;font-weight:600">+ Chống nắng</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><h2>Bán chạy tuần này</h2><a href="#" style="color:var(--sale);font-size:.85rem;font-weight:600">Xem tất cả</a></div>
+    <div class="grid4">
+      <div class="pcard">
+        <div class="media"><span class="rank">#1</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/fd/178702649306bdfda6b7c7d405602fac6196d063f9_square.jpg" /></div>
+        <div class="body">
+          <p class="brand">Sisley</p>
+          <p class="name">Le Phyto Rouge Long Lasting Lipstick 3.4g</p>
+          <p class="stars">★★★★★ <span class="sold">Đã bán 128</span></p>
+          <p class="now">1.608.000₫</p>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="media"><span class="rank">#2</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/de/17870304708c5955da9ec5550feec4b39a1f661919_square.jpg" /></div>
+        <div class="body">
+          <p class="brand">Sisley</p>
+          <p class="name">Foundation Brush Ultra-Soft Synthetic</p>
+          <p class="stars">★★★★★ <span class="sold">Đã bán 96</span></p>
+          <p class="now">1.644.000₫</p>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="media"><span class="rank">#3</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/d4/1787030857c1aaf91034552cbf47187bc5c9b8e4f2_square.jpg" /></div>
+        <div class="body">
+          <p class="brand">Sisley</p>
+          <p class="name">Eyeliner Brush Pinceau Traceur</p>
+          <p class="stars">★★★★☆ <span class="sold">Đã bán 74</span></p>
+          <p class="now">1.548.000₫</p>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="media"><span class="rank">#4</span><img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/9c/17870309910610a515f3312748d3a51fd68c4b1094_square.jpg" /></div>
+        <div class="body">
+          <p class="brand">Sisley</p>
+          <p class="name">Gentle Brush Face &amp; Neck</p>
+          <p class="stars">★★★★★ <span class="sold">Đã bán 61</span></p>
+          <p class="now">1.471.000₫</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="story">
+      <img src="https://img.ltwebstatic.com/v4/j/spmp/2026/08/18/3c/17870330948c5cd58539e34be3014574e68ac47718_square.jpg" alt="" />
+      <div class="cap">
+        <p class="eyebrow">Về JLP Việt Nam</p>
+        <h2>Không phải hàng nhái trôi nổi</h2>
+        <p>JLP phân phối mỹ phẩm nội địa Nhật nhập chính ngạch. Mỗi sản phẩm đều tra được mã JAN và số phiếu công bố — khác với hàng xách tay không rõ nguồn ở nhiều nơi khác.</p>
+        <a class="cta" href="#" style="background:var(--ink);color:#fff;display:inline-block;padding:.6rem 1.1rem;border-radius:999px;font-size:.85rem;font-weight:600">Xem trang giới thiệu</a>
+      </div>
+    </div>
+    <div class="footer-note">Website trưng bày sản phẩm, đặt hàng và thanh toán trực tiếp qua Zalo hoặc điện thoại — không thu tiền qua website.</div>
+  </div>
+</section>
+
+<nav class="mnav">
+  <div class="wrap">
+    <a href="#"><span class="icn">🏠</span>Trang chủ</a>
+    <a href="#"><span class="icn">📂</span>Danh mục</a>
+    <a href="#"><span class="icn">🎁</span>Khuyến mãi</a>
+    <a href="#"><span class="icn">💬</span>Zalo</a>
+    <a href="#"><span class="icn">🛒</span>Giỏ</a>
+  </div>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+---
+import Layout from "../components/Layout.astro";
+import ProductCard from "../components/ProductCard.astro";
+import { getAllProducts, toCatalogItem } from "../lib/medusa";
+import { site } from "../lib/site";
+
+const products = await getAllProducts();
+const items = products.map(toCatalogItem).filter((i) => i.onSale || i.gift);
+const onSaleCount = items.filter((i) => i.onSale).length;
+const giftCount = items.filter((i) => i.gift).length;
+---
+
+<Layout title={`Khuyến mãi — ${site.name}`}>
+  <section class="hero" style="min-height:220px">
+    <div class="hero-bg"><div class="fallback"></div></div>
+    <div class="wrap hero-grid" style="grid-template-columns:1fr">
+      <div class="inner">
+        <p class="eyebrow">Ưu đãi đang chạy</p>
+        <h1>Khuyến mãi & <em>tặng kèm</em></h1>
+        <p class="lede">{onSaleCount} sản phẩm đang giảm giá, {giftCount} sản phẩm có tặng kèm.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      {items.length === 0 ? (
+        <p style="color:var(--ink-soft)">Hiện chưa có khuyến mãi nào.</p>
+      ) : (
+        <>
+          <form class="filter-bar" id="filter-form">
+            <div class="filter-group">
+              <label for="sort">Sắp xếp</label>
+              <select id="sort" name="sort">
+                <option value="default">Mặc định</option>
+                <option value="price-asc">Giá tăng dần</option>
+                <option value="price-desc">Giá giảm dần</option>
+              </select>
+            </div>
+            <div class="filter-group checks">
+              <label class="filter-check"><input type="checkbox" id="only-sale" /> Đang giảm giá</label>
+              <label class="filter-check"><input type="checkbox" id="only-gift" /> Có tặng kèm</label>
+            </div>
+            <button type="button" class="filter-reset" id="filter-reset">Xoá lọc</button>
+          </form>
+          <p class="data" id="filter-count" style="color:var(--ink-faint);margin:0 0 1rem">{items.length} sản phẩm</p>
+          <div class="grid" id="product-grid">
+            {items.map((item) => (
+              <ProductCard item={item} />
+            ))}
+          </div>
+          <p class="filter-empty" id="filter-empty" hidden>Không có sản phẩm khớp bộ lọc.</p>
+        </>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById("filter-form");
+  if (form) {
+    const grid = document.getElementById("product-grid")!;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
+    const countEl = document.getElementById("filter-count")!;
+    const emptyEl = document.getElementById("filter-empty")!;
+    const sortEl = document.getElementById("sort") as HTMLSelectElement;
+    const saleEl = document.getElementById("only-sale") as HTMLInputElement;
+    const giftEl = document.getElementById("only-gift") as HTMLInputElement;
+    const resetBtn = document.getElementById("filter-reset")!;
+
+    function apply() {
+      let visible = 0;
+      for (const card of cards) {
+        const onSale = card.dataset.onsale === "1";
+        const hasGift = card.dataset.gift === "1";
+        let ok = true;
+        if (saleEl.checked && !onSale) ok = false;
+        if (giftEl.checked && !hasGift) ok = false;
+        card.hidden = !ok;
+        if (ok) visible++;
+      }
+      if (sortEl.value !== "default") {
+        const sorted = [...cards].sort((a, b) => {
+          const pa = Number(a.dataset.price || 0);
+          const pb = Number(b.dataset.price || 0);
+          return sortEl.value === "price-asc" ? pa - pb : pb - pa;
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+      countEl.textContent = `${visible} sản phẩm`;
+      emptyEl.hidden = visible !== 0;
+    }
+
+    for (const el of [sortEl, saleEl, giftEl]) {
+      el.addEventListener("input", apply);
+      el.addEventListener("change", apply);
+    }
+    resetBtn.addEventListener("click", () => {
+      sortEl.value = "default";
+      saleEl.checked = false;
+      giftEl.checked = false;
+      apply();
+    });
+  }
+</script>

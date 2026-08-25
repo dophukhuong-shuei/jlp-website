@@ -1,0 +1,35 @@
+---
+import { barcode } from "../lib/format";
+import type { CatalogItem } from "../lib/medusa";
+
+interface Props {
+  item: CatalogItem;
+  full?: boolean;
+}
+const { item, full = false } = Astro.props;
+---
+
+<div class={`strip${full ? " full" : ""}`}>
+  {
+    item.jan && (
+      <div class="barcode" aria-hidden="true" set:html={barcode(item.jan)} />
+    )
+  }
+  <dl class="fields">
+    {item.volume && (<div class="field"><dt>Dung tích</dt><dd>{item.volume}</dd></div>)}
+    {item.origin && (<div class="field"><dt>Xuất xứ</dt><dd>{item.origin}</dd></div>)}
+    {item.jan && (<div class="field"><dt>JAN</dt><dd>{item.jan}</dd></div>)}
+    {full && item.lot && (<div class="field"><dt>Lô</dt><dd>{item.lot}</dd></div>)}
+    {full && item.cbmp && (
+      <div class="field verified">
+        <dt>Phiếu công bố</dt>
+        <dd>
+          <svg viewBox="0 0 16 16" width="11" height="11">
+            <path d="M5 8.2l2 2L11.2 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {item.cbmp}
+        </dd>
+      </div>
+    )}
+  </dl>
+</div>

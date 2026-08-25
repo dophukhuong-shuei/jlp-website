@@ -1,0 +1,46 @@
+---
+import LabelStrip from "./LabelStrip.astro";
+import { boxSvg, formatPrice, placeholderBg } from "../lib/format";
+import type { CatalogItem } from "../lib/medusa";
+
+interface Props {
+  item: CatalogItem;
+}
+const { item } = Astro.props;
+const discountPct =
+  item.onSale && item.wasPrice && item.price ? Math.round((1 - item.price / item.wasPrice) * 100) : null;
+---
+
+<a
+  class="card"
+  href={`/san-pham/${item.handle}/`}
+  data-price={item.price ?? ""}
+  data-onsale={item.onSale ? "1" : "0"}
+  data-gift={item.gift ? "1" : "0"}
+  data-instock={item.inStock ? "1" : "0"}
+>
+  <div class="media">
+    {
+      item.thumbnail ? (
+        <img src={item.thumbnail} alt={item.title} loading="lazy" />
+      ) : (
+        <Fragment set:html={boxSvg(placeholderBg(item.id))} />
+      )
+    }
+    {item.ja && <span class="ja">{item.ja}</span>}
+    {discountPct && <span class="pct-badge">-{discountPct}%</span>}
+    {item.gift && <span class="tag tag-gift" style={discountPct ? "top:2.4rem" : ""}>Có tặng kèm</span>}
+    {!item.inStock && <span class="oos">Tạm hết hàng</span>}
+  </div>
+  <div class="body">
+    {item.brand && <p class="eyebrow brand">{item.brand}</p>}
+    <h3 class="name">{item.title}</h3>
+    {item.description && <p class="desc">{item.description}</p>}
+    <p class="prices">
+      {item.price != null && <span class="price">{formatPrice(item.price, item.currency)}</span>}
+      {item.wasPrice != null && <s class="was">{formatPrice(item.wasPrice, item.currency)}</s>}
+    </p>
+    {item.gift && <p class="gift-note">🎁 {item.gift}</p>}
+    <LabelStrip item={item} />
+  </div>
+</a>

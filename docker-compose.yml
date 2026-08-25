@@ -1,0 +1,37 @@
+version: "3.8"
+
+# Hạ tầng local cho backend Medusa (catalog vài nghìn sản phẩm).
+# Chạy: docker compose up -d
+# Dừng: docker compose down (thêm -v để xoá luôn volume dữ liệu)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jlb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: medusa
+      POSTGRES_PASSWORD: medusa
+      POSTGRES_DB: medusa_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - jlb_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medusa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: jlb-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - jlb_redis_data:/data
+
+volumes:
+  jlb_postgres_data:
+  jlb_redis_data:

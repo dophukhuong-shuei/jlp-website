@@ -1,0 +1,65 @@
+---
+import Layout from "../../components/Layout.astro";
+import LabelStrip from "../../components/LabelStrip.astro";
+import { getAllProducts, toCatalogItem } from "../../lib/medusa";
+import { boxSvg, formatPrice, placeholderBg } from "../../lib/format";
+import { site } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const products = await getAllProducts();
+  return products.map((product) => ({
+    params: { handle: product.handle },
+    props: { item: toCatalogItem(product) },
+  }));
+}
+
+const { item } = Astro.props;
+const discountPct =
+  item.wasPrice && item.price ? Math.round((1 - item.price / item.wasPrice) * 100) : null;
+---
+
+<Layout title={`${item.title} — ${site.name}`}>
+  <section class="block">
+    <div class="wrap">
+      <a class="back" href="/">← Danh sách sản phẩm</a>
+      <div class="detail">
+        <figure class="mainimg">
+          {
+            item.thumbnail ? (
+              <img src={item.thumbnail} alt={item.title} />
+            ) : (
+              <Fragment set:html={boxSvg(placeholderBg(item.id))} />
+            )
+          }
+          {item.ja && <span class="ja">{item.ja}</span>}
+        </figure>
+        <div class="info">
+          {item.brand && (
+            <p class="eyebrow brand">
+              {item.brand} {item.ja && <span style="color:var(--ink-faint)">{item.ja}</span>}
+            </p>
+          )}
+          <h2>{item.title}</h2>
+          {item.description && <p style="color:var(--ink-soft);margin:0 0 1.25rem">{item.description}</p>}
+          <div class="prices">
+            {item.price != null && <span class="price now">{formatPrice(item.price, item.currency)}</span>}
+            {item.wasPrice != null && <s class="was">{formatPrice(item.wasPrice, item.currency)}</s>}
+            {discountPct && <span class="off">−{discountPct}%</span>}
+          </div>
+          <p class="stock">
+            {item.inStock ? "Còn hàng, giao trong 1–2 ngày ở TP.HCM" : "Tạm hết hàng"}
+          </p>
+          <div class="order">
+            <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">Đặt qua Zalo</a>
+            <a class="btn-alt" href={site.phoneHref}>Gọi {site.phone}</a>
+          </div>
+          <p class="order-note">
+            Website chỉ trưng bày, không thanh toán online. Bạn chốt đơn và chọn cách trả tiền trực tiếp với shop
+            qua Zalo.
+          </p>
+          <LabelStrip item={item} full />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

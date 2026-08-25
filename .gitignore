@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.medusa/
+.turbo/
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+backend/apps/backend/static/

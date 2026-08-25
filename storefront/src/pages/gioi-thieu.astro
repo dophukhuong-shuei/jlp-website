@@ -1,0 +1,54 @@
+---
+import Layout from "../components/Layout.astro";
+import { site } from "../lib/site";
+---
+
+<Layout title={`Giới thiệu — ${site.name}`}>
+  <section class="hero">
+    <div class="wrap inner">
+      <p class="eyebrow">Về {site.name}</p>
+      <h1>Mỹ phẩm Nhật<br /><em>tra cứu được nguồn gốc.</em></h1>
+      <p class="lede">{site.about}</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><h2>Liên hệ</h2></div>
+      <div class="detail" style="grid-template-columns:1fr 1fr">
+        <div>
+          <dl class="fields" style="flex-direction:column;gap:.6rem;font-size:var(--t-sm)">
+            <div class="field"><dt>Điện thoại</dt><dd><a class="data" href={site.phoneHref}>{site.phone}</a></dd></div>
+            <div class="field"><dt>Zalo</dt><dd><a class="data" href={site.zaloUrl} target="_blank" rel="noopener">Chat qua Zalo</a></dd></div>
+            <div class="field"><dt>Email</dt><dd><a class="data" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+            <div class="field"><dt>Địa chỉ</dt><dd>{site.address}</dd></div>
+            <div class="field"><dt>Giờ mở cửa</dt><dd>{site.hours}</dd></div>
+          </dl>
+          <div class="order" style="margin-top:1.5rem">
+            <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">Đặt qua Zalo</a>
+            <a class="btn-alt" href={site.phoneHref}>Gọi {site.phone}</a>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow brand">Cam kết</p>
+          <p style="color:var(--ink-soft)">
+            Mọi sản phẩm nhập chính ngạch, in mã JAN và số phiếu công bố ngay trên trang sản phẩm để khách tự đối
+            chiếu trước khi mua. Website chỉ trưng bày — đơn hàng chốt và thanh toán trực tiếp qua Zalo hoặc điện
+            thoại, không thu tiền qua website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><h2>Danh mục sản phẩm</h2></div>
+      <ol class="steps">
+        {site.categories.map((c) => (
+          <li><h3>{c}</h3></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Layout>
