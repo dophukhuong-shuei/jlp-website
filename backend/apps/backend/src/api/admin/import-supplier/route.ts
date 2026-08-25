@@ -134,6 +134,12 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
     bySpu.get(key)!.push(r);
   }
 
+  if (bySpu.size === 0) {
+    return res.status(400).json({
+      message: `Không tìm thấy dòng sản phẩm nào. File cần có sheet "Product Information" với cột SPU/Product Number/SKU. Sheet tìm thấy: ${wb.SheetNames.join(", ")}.`,
+    });
+  }
+
   const existingProducts = await productModuleService.listProducts({}, { take: 1000, select: ["id", "metadata"] });
   const existingSpus = new Set(existingProducts.map((p: any) => p.metadata?.source_spu).filter(Boolean));
 
@@ -141,8 +147,14 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
 
   for (const [spu, variantRows] of bySpu) {
     const first = variantRows[0];
-    const title = first["Multilingual product names(en)"] || first["Product Name"] || first.Title;
-    if (!title) continue;
+    // Không phải file nào cũng có tên tiếng Anh (vd Melvita chỉ có tên tiếng Nhật) — dùng chuỗi fallback.
+    const title =
+      first["Multilingual product names(en)"] ||
+      first["Product Name"] ||
+      first.Title ||
+      first["Default Product Name(ja)"] ||
+      first["Product Number"] ||
+      spu;
 
     if (existingSpus.has(spu)) {
       results.push({ title, status: "skipped" });
@@ -164,7 +176,7 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
     const optionValues = [...new Set(variantRows.map((r) => r["Main Specification Value"] || "Default"))];
 
     const variants = variantRows.map((r: Record<string, any>) => {
-      const priceJpy = Number(r["Selling price(shein-jp_JPY)"]) || 0;
+      const priceJpy = Number(r["Selling price(shein-jp_JPY)"] ?? r.price) || 0;
       const priceVnd = Math.round((priceJpy * jpyToVnd) / 1000) * 1000;
       return {
         title: r["Main Specification Value"] || "Default",
@@ -172,9 +184,14 @@ export async function POST(req: UploadedRequest, res: MedusaResponse) {
         manage_inventory: false,
         options: { [optionTitle]: r["Main Specification Value"] || "Default" },
         prices: [{ amount: priceVnd, currency_code: "vnd" }],
-        metadata: { origin: "Nhật Bản", weight_g: r.Weight ?? null },
+        metadata: { origin: r.Origin || "Nhật Bản", weight_g: r.Weight ?? null },
       };
     });
+
+    if (variants.every((v) => v.prices[0].amount === 0)) {
+      results.push({ title, status: "failed", error: "Không tìm thấy cột giá hợp lệ trong file (bỏ qua sản phẩm này)." });
+      continue;
+    }
 
     const attrs = attributesIndex.get(spu);
 
