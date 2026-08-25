@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đánh giá Medusa cho Storefront</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --border: #e5e1da;
+    --text: #262220;
+    --text-muted: #6b645c;
+    --accent: #8a5a3f;
+    --accent-soft: #f3e9e2;
+    --good: #3f6e4f;
+    --good-soft: #e9f2ea;
+    --warn: #9a6a1f;
+    --warn-soft: #faf1de;
+    --future: #4a5b8a;
+    --future-soft: #eaeef8;
+    --code-bg: #f1ede7;
+    --shadow: 0 1px 2px rgba(40,30,20,0.06), 0 8px 24px rgba(40,30,20,0.05);
+    font-size: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1815;
+      --surface: #242019;
+      --border: #383129;
+      --text: #ede8e0;
+      --text-muted: #a89e91;
+      --accent: #d9a077;
+      --accent-soft: #332721;
+      --good: #7fbb8f;
+      --good-soft: #223228;
+      --warn: #d9ac5f;
+      --warn-soft: #33291a;
+      --future: #8fa3d9;
+      --future-soft: #212636;
+      --code-bg: #2c2620;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1815;
+    --surface: #242019;
+    --border: #383129;
+    --text: #ede8e0;
+    --text-muted: #a89e91;
+    --accent: #d9a077;
+    --accent-soft: #332721;
+    --good: #7fbb8f;
+    --good-soft: #223228;
+    --warn: #d9ac5f;
+    --warn-soft: #33291a;
+    --future: #8fa3d9;
+    --future-soft: #212636;
+    --code-bg: #2c2620;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Noto Serif", serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+
+  header.hero {
+    margin-bottom: 3rem;
+  }
+  .kicker {
+    font-family: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.9rem;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 0.9rem;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 2.2rem 0 3rem;
+  }
+  .stat {
+    background: var(--surface);
+    padding: 1.1rem 1.3rem;
+  }
+  .stat .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .stat .l {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+  }
+
+  section { margin-bottom: 3.2rem; }
+  h2 {
+    font-size: 1.45rem;
+    margin: 0 0 1.1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: -0.005em;
+  }
+  h3 {
+    font-size: 1.05rem;
+    margin: 1.6rem 0 0.7rem;
+    color: var(--text);
+  }
+  p { margin: 0 0 1rem; }
+  .text-muted { color: var(--text-muted); }
+
+  code {
+    font-family: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+    font-size: 0.87em;
+    background: var(--code-bg);
+    padding: 0.12em 0.4em;
+    border-radius: 4px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .pill.active { background: var(--good-soft); color: var(--good); }
+  .pill.dormant { background: var(--warn-soft); color: var(--warn); }
+  .pill.future { background: var(--future-soft); color: var(--future); }
+
+  .capability-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .capability-table th, .capability-table td {
+    text-align: left;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .capability-table th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--code-bg);
+  }
+  .capability-table tr:last-child td { border-bottom: none; }
+  .capability-table td.status { white-space: nowrap; }
+  .table-scroll { overflow-x: auto; border-radius: 12px; }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.2rem 0;
+  }
+  @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+  .compare .col {
+    border-radius: 12px;
+    padding: 1.3rem 1.4rem;
+    border: 1px solid var(--border);
+  }
+  .compare .col.old { background: var(--surface); }
+  .compare .col.new { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+  .compare .col h4 {
+    margin: 0 0 0.9rem;
+    font-size: 0.98rem;
+  }
+  .compare ul { margin: 0; padding-left: 1.15rem; }
+  .compare li { margin-bottom: 0.55rem; font-size: 0.92rem; }
+  .compare li::marker { color: var(--text-muted); }
+
+  .timeline {
+    border-left: 2px solid var(--border);
+    margin-left: 0.4rem;
+    padding-left: 1.5rem;
+  }
+  .timeline .step {
+    position: relative;
+    padding-bottom: 1.7rem;
+  }
+  .timeline .step:last-child { padding-bottom: 0; }
+  .timeline .step::before {
+    content: "";
+    position: absolute;
+    left: -1.83rem;
+    top: 0.28rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--future);
+    border: 2px solid var(--bg);
+  }
+  .timeline h4 { margin: 0 0 0.3rem; font-size: 0.98rem; }
+  .timeline p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    font-size: 0.93rem;
+    color: var(--text-muted);
+    margin: 1.2rem 0;
+  }
+  .callout strong { color: var(--text); }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .lang-switch {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    margin-bottom: 1.5rem;
+  }
+  .lang-switch a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
+  .lang-switch a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="lang-switch"><a href="medusa-assessment.html">EN</a> · <strong>VI</strong></p>
+
+  <header class="hero">
+    <p class="kicker">JLB / JLP — Đánh giá kỹ thuật</p>
+    <h1>Medusa — bộ máy dữ liệu của storefront</h1>
+    <p class="lede">
+      Medusa đang cung cấp gì cho site hiện tại, vì sao đã tốt hơn cách làm tĩnh ban đầu,
+      và mở rộng được gì sau này mà không cần đập đi làm lại.
+    </p>
+  </header>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="n">Build-time</div>
+      <div class="l">Storefront chỉ gọi Medusa lúc build — chi phí server lúc chạy bằng 0</div>
+    </div>
+    <div class="stat">
+      <div class="n">3/8+</div>
+      <div class="l">Nhóm Store API đang dùng — cart, checkout, đơn hàng, tài khoản khách chưa dùng tới</div>
+    </div>
+    <div class="stat">
+      <div class="n">1 mở rộng</div>
+      <div class="l">Đã có tính năng tuỳ chỉnh (import hàng loạt từ nhà cung cấp), chứng minh nền tảng mở rộng được</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Medusa đang làm gì thực sự</h2>
+    <p>
+      Storefront (<code>storefront/src/lib/medusa.ts</code>) chỉ gọi đúng 3 nhóm Store API, đều chỉ đọc dữ liệu,
+      và đều thực hiện ở <strong>lúc build</strong> — không bao giờ gọi từ trình duyệt của khách:
+    </p>
+
+    <div class="table-scroll">
+      <table class="capability-table">
+        <thead>
+          <tr><th>Nhóm Store API</th><th>Trạng thái</th><th>Cách dùng trong dự án này</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>product.list</code></td>
+            <td class="status"><span class="pill active">Đang dùng</span></td>
+            <td>Lấy sản phẩm theo trang, theo danh mục/vùng, kèm giá đã tính và số lượng tồn.</td>
+          </tr>
+          <tr>
+            <td><code>category.list</code></td>
+            <td class="status"><span class="pill active">Đang dùng</span></td>
+            <td>Dựng trang danh mục và điều hướng.</td>
+          </tr>
+          <tr>
+            <td><code>region.list</code></td>
+            <td class="status"><span class="pill active">Đang dùng</span></td>
+            <td>Lấy vùng mặc định để tính giá đúng — hiện tại chỉ có 1 vùng.</td>
+          </tr>
+          <tr>
+            <td>Bộ máy tính giá (<code>calculated_price</code>)</td>
+            <td class="status"><span class="pill active">Đang dùng</span></td>
+            <td>Giá được Medusa tính thật, không phải số cố định — sẵn sàng cho thuế/quy tắc theo vùng sau này.</td>
+          </tr>
+          <tr>
+            <td><code>metadata</code> của sản phẩm</td>
+            <td class="status"><span class="pill active">Đang dùng</span></td>
+            <td>Chỗ chứa các field riêng của JLB: mã JAN, xuất xứ, mã lô, số phiếu công bố, loại da, giá khuyến mãi.</td>
+          </tr>
+          <tr>
+            <td>Giỏ hàng / Checkout / Thanh toán</td>
+            <td class="status"><span class="pill dormant">Đã cài, chưa dùng</span></td>
+            <td>Có sẵn trong lõi Medusa. Chưa gọi tới — site dẫn khách qua Zalo/điện thoại thay vì thanh toán online.</td>
+          </tr>
+          <tr>
+            <td>Tài khoản khách hàng / Đăng nhập</td>
+            <td class="status"><span class="pill dormant">Đã cài, chưa dùng</span></td>
+            <td>Không có đăng nhập, không có lịch sử đơn hàng — chưa cần cho site chỉ trưng bày.</td>
+          </tr>
+          <tr>
+            <td>Quản lý đơn hàng</td>
+            <td class="status"><span class="pill dormant">Đã cài, chưa dùng</span></td>
+            <td>Đơn hàng chốt thủ công qua Zalo, hoàn toàn nằm ngoài Medusa.</td>
+          </tr>
+          <tr>
+            <td>Khuyến mãi / bộ máy quy tắc giá</td>
+            <td class="status"><span class="pill dormant">Đã cài, chưa dùng</span></td>
+            <td>Giá khuyến mãi hiện làm thủ công qua metadata — đơn giản hơn cho site không có checkout.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>Vì sao điều này quan trọng:</strong> mọi thứ ở nhóm "đã cài, chưa dùng" đều đã nằm sẵn trong
+      các gói phụ thuộc hiện tại của backend (<code>@medusajs/medusa</code>, <code>@medusajs/framework</code>).
+      Bật chúng lên sau này chỉ là việc đấu nối, không phải đổi nền tảng.
+    </div>
+
+    <h3>Đã chứng minh khả năng mở rộng</h3>
+    <p>
+      Đây không chỉ là lý thuyết — backend đã có một tính năng tuỳ chỉnh thật, xây trên các điểm mở rộng của
+      Medusa: một <strong>công cụ import hàng loạt</strong> (<code>src/api/admin/import-supplier</code>) đọc
+      file Excel của nhà cung cấp, tự quy đổi giá JPY sang VND, ánh xạ tên danh mục tiếng Nhật sang danh mục
+      của shop, và tạo sản phẩm thông qua workflow engine của Medusa — cùng với một màn hình tuỳ chỉnh gắn
+      thẳng vào Admin dashboard để upload file. Đây là bằng chứng workflow engine, hệ thống module, và các
+      điểm mở rộng Admin UI của Medusa đã được vận dụng thật trong dự án.
+    </p>
+  </section>
+
+  <section>
+    <h2>So sánh với phương án tĩnh ban đầu</h2>
+    <p>
+      Dự án khởi đầu là một site hoàn toàn tĩnh: nội dung nằm trong file markdown, chỉnh sửa qua admin
+      Keystatic ghi thẳng vào git repo — một cách làm hợp lý, thực sự miễn phí cho một catalog nhỏ phi
+      thương mại. Medusa thay thế lớp nội dung đó, trong khi site nhìn từ phía khách vẫn tĩnh y hệt.
+    </p>
+
+    <div class="compare">
+      <div class="col old">
+        <h4>Markdown + Keystatic (ban đầu)</h4>
+        <ul>
+          <li>Sửa sản phẩm là tạo commit git — ổn nếu làm một mình, bất tiện nếu chủ shop không rành kỹ thuật hoặc có thêm người chỉnh sửa</li>
+          <li>Không có mô hình dữ liệu có cấu trúc ngoài những gì viết tay trong frontmatter — không có giá tính toán, không có field tồn kho đúng nghĩa</li>
+          <li>Nhập hàng loạt nghĩa là phải viết/copy nhiều file thủ công</li>
+          <li>Không có dashboard quản trị ngoài form CMS — không báo cáo, không xem tồn kho</li>
+          <li>Không có đường nào để lên checkout sau này nếu không bỏ hẳn lớp nội dung hiện tại</li>
+        </ul>
+      </div>
+      <div class="col new">
+        <h4>Astro + Medusa (hiện tại)</h4>
+        <ul>
+          <li>Dashboard quản trị thật tại <code>/app</code> — sửa sản phẩm, danh mục, giá bằng giao diện thật, không cần biết git</li>
+          <li>Mô hình dữ liệu thương mại có cấu trúc: variant, giá đã tính, vùng, số lượng tồn kho — không chỉ là các trường văn bản</li>
+          <li>Đã có sẵn công cụ import hàng loạt từ nhà cung cấp, dùng workflow engine của Medusa — mở rộng được thay vì nhập tay</li>
+          <li>Kết quả với khách vẫn là site tĩnh hoàn toàn, chi phí hosting và hiệu năng như cũ</li>
+          <li>Có đường thẳng, không cần làm lại, để lên checkout, tài khoản khách, quản lý đơn hàng khi cần</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="text-muted">
+      Đánh đổi: Medusa cần một Node service chạy liên tục và một database, trong khi Keystatic không cần gì
+      cả. Chi phí này chỉ trả một lần, ở phần hosting backend — không ảnh hưởng gì đến việc storefront vẫn
+      deploy tĩnh, miễn phí trên Cloudflare Pages.
+    </p>
+  </section>
+
+  <section>
+    <h2>Mở rộng được gì sau này</h2>
+    <p>
+      Vì các module thương mại đã có sẵn trong backend đang cài, việc mở rộng ra ngoài phạm vi catalog
+      thuần tuý chỉ là cộng thêm — đấu nối thêm, không phải xây nền tảng mới.
+    </p>
+
+    <div class="timeline">
+      <div class="step">
+        <h4>Checkout thật</h4>
+        <p>Đăng ký module thanh toán (Stripe, hoặc cổng phù hợp Việt Nam như VNPay/MoMo dưới dạng provider tuỳ chỉnh), sau đó chuyển storefront từ chỉ đọc lúc build sang dùng Cart API và Payment Session API lúc chạy thật. Đây là thay đổi duy nhất cần một server chạy liên tục thay vì hosting tĩnh thuần.</p>
+      </div>
+      <div class="step">
+        <h4>Quản lý đơn hàng</h4>
+        <p>Khi có giỏ hàng, module Order của Medusa cho lịch sử đơn hàng, theo dõi trạng thái, email xác nhận — hiển thị ngay trong cùng dashboard Admin đang dùng.</p>
+      </div>
+      <div class="step">
+        <h4>Tài khoản khách hàng</h4>
+        <p>Module Customer/Auth nằm sẵn trong cùng bản cài — đăng nhập, lưu địa chỉ, lịch sử đơn hàng cho khách quay lại, không cần thêm hệ thống mới.</p>
+      </div>
+      <div class="step">
+        <h4>Khuyến mãi và giá theo quy tắc</h4>
+        <p>Giá khuyến mãi hiện tại là field metadata thủ công. Bộ máy khuyến mãi của Medusa (đã cài, chưa dùng) hỗ trợ mã giảm giá, quy tắc tự động, giá theo combo khi thực sự cần độ phức tạp đó.</p>
+      </div>
+      <div class="step">
+        <h4>Đa vùng / đa tiền tệ</h4>
+        <p>Storefront hiện giả định chỉ một vùng và VND. Các module vùng/tiền tệ/thuế của Medusa hỗ trợ nhiều hơn mà không cần cài thêm gói — code đã gọi region API sẵn, chỉ là chưa có thêm vùng nào khác được nạp vào.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Kết luận:</strong> site hiện tại trả một chi phí hosting nhỏ, một lần, cho một Node service và
+      database mà hiện dùng chưa nhiều — đổi lại là một backend thương mại thật, đã từng được tuỳ chỉnh một
+      lần (import từ nhà cung cấp), và có thể tiếp nhận checkout, tài khoản khách, khuyến mãi sau này mà
+      không cần thay storefront hay mô hình hosting.
+    </div>
+  </section>
+
+  <footer>
+    Dựa trên mã nguồn tại <code>backend/apps/backend</code> và <code>storefront/src/lib/medusa.ts</code> tại thời điểm đánh giá.
+  </footer>
+</div>
+</body>
+</html>

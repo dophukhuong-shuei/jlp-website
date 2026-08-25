@@ -1,103 +1,101 @@
-# Catalog mỹ phẩm Nhật — Astro 6
+# JLB/JLP — Japanese Cosmetics Catalog
 
-Website trưng bày sản phẩm, không thanh toán online. Đơn hàng chốt qua Zalo hoặc điện thoại.
+Product showcase site, no online checkout. Orders are closed via Zalo or phone.
 
-Toàn bộ site build ra HTML tĩnh. Không database, không serverless function, không API runtime → hạ tầng thực tế chỉ còn tiền domain.
+The storefront is a static Astro site whose pages — home, category, product, promotions — are generated at **build time** from a Medusa backend. Medusa is the single source of truth for products, categories, and pricing; there is no markdown/CMS content layer.
 
-## Chạy lần đầu
+## How it fits together
+
+```
+backend/     Medusa v2 commerce backend (product/category data, admin dashboard)
+storefront/  Astro site — fetches everything from Medusa at build time, deploys as static HTML
+```
+
+Because product data is fetched at build time (see `storefront/src/lib/medusa.ts`), **the storefront cannot build without a reachable Medusa backend**. There is no fallback or mock data path — if Medusa is down or empty, `astro build` fails or produces an empty catalog.
+
+## Running locally
+
+**1. Start the backend** (see [backend/README.md](backend/README.md) for full setup — needs PostgreSQL):
 
 ```bash
+cd backend/apps/backend
+pnpm dev
+```
+
+Backend runs at `http://localhost:9000`. Log into the admin at `http://localhost:9000/app`, add at least one region, category, and product, and grab a publishable API key under Settings.
+
+**2. Start the storefront**, pointing it at the backend:
+
+```bash
+cd storefront
 npm install
+```
+
+Create `storefront/.env` from `.env.example` and set:
+
+```
+MEDUSA_BACKEND_URL=http://localhost:9000
+MEDUSA_PUBLISHABLE_KEY=pk_...
+```
+
+```bash
 npm run dev
 ```
 
-- Site: http://localhost:4321
-- Trang quản lý sản phẩm: http://localhost:4321/keystatic
+Site: http://localhost:4321. Requires Node `>=22.12.0`.
 
-Yêu cầu Node `^22.12.0 || ^24.0.0` — Astro 6 không chạy trên Node 20.
+## Architecture
 
-## Việc cần làm trước khi deploy
-
-| File | Sửa gì |
-|---|---|
-| `src/lib/site.ts` | Tên shop, Zalo OA, số điện thoại, địa chỉ, email |
-| `astro.config.mjs` | `SITE` → domain thật |
-| `public/robots.txt` | URL sitemap |
-| `src/data/products/*.md` | Xoá 6 sản phẩm mẫu |
-| `src/assets/products/*.jpg` | Xoá ảnh placeholder, thay ảnh thật |
-
-**Số phiếu công bố trong dữ liệu mẫu là `PLACEHOLDER-...` — thay bằng số thật hoặc xoá field đó.** Đăng số công bố sai còn tệ hơn không đăng.
-
-## Thêm sản phẩm
-
-Hai cách, cùng ghi ra một chỗ:
-
-**Bạn tự thêm** — tạo file `src/data/products/ten-san-pham.md`, copy frontmatter từ một file có sẵn. Schema ở `src/content.config.ts` validate ở build time: thiếu field bắt buộc hoặc mã JAN không đủ 13 số thì build fail ngay, không deploy được trang lỗi.
-
-**Người bán tự thêm** — mở `keystatic.config.ts`, đổi:
-
-```ts
-storage: { kind: "local" }
-// thành
-storage: { kind: "github", repo: "your-user/your-repo" }
+```
+storefront/src/
+├── lib/
+│   ├── medusa.ts            All Medusa fetching + mapping to CatalogItem. Single source of truth.
+│   └── site.ts              Shop info (name, phone, Zalo, address). Placeholder values — replace before launch.
+├── components/
+│   ├── ProductCard.astro
+│   └── Layout.astro
+└── pages/
+    ├── index.astro
+    ├── about.astro
+    ├── promotions.astro
+    ├── categories/[handle].astro
+    ├── products/[handle].astro
+    └── search-index.json.ts
 ```
 
-Sau đó người bán vào `/keystatic`, đăng nhập GitHub, điền form. Keystatic tạo commit → Cloudflare Pages tự build lại. Không cần biết Git.
+Product fields the UI reads (brand, JAN, volume, origin, lot, license number, skin type, attributes) come from each product's **metadata** in Medusa Admin — see `toCatalogItem()` in `medusa.ts`. A missing field is simply hidden, never guessed.
 
-Keystatic admin chỉ nạp khi `NODE_ENV=development` (xem `astro.config.mjs`), nên bản production không có route `/keystatic` và không phát sinh chi phí function.
+`storefront/src/lib/site.ts` still has placeholder phone/address/email — replace before launch.
 
-## Deploy Cloudflare Pages
+## Deploying
+
+**Backend (Medusa)** needs a long-running Node process + PostgreSQL — it can't be hosted as static files. See [backend/README.md](backend/README.md).
+
+**Storefront** builds to static HTML and deploys to Cloudflare Pages:
 
 ```
 Framework preset:  Astro
 Build command:     npm run build
 Output directory:  dist
-Node version:      22 (biến môi trường NODE_VERSION=22)
+Node version:      22 (env var NODE_VERSION=22)
+Env vars:          MEDUSA_BACKEND_URL, MEDUSA_PUBLISHABLE_KEY
 ```
 
-Nối repo GitHub → mỗi push tự deploy. Cloudflare Pages free tier cho phép dùng thương mại và không tính phí băng thông.
+Deploy the backend first — the storefront build will fail without a reachable `MEDUSA_BACKEND_URL` that has at least one region/category/product. Cloudflare Pages' free tier allows commercial use and doesn't charge for bandwidth.
 
-Đừng dùng Vercel Hobby cho site này — ToS của Vercel giới hạn Hobby ở mục đích phi thương mại.
+Don't use Vercel Hobby for this site — Vercel's ToS restricts Hobby to non-commercial use.
 
-## Kiến trúc
+## Technical notes
 
-```
-src/
-├── content.config.ts        Schema sản phẩm (Zod 4). Nguồn chân lý duy nhất.
-├── data/
-│   ├── products/*.md        Mỗi sản phẩm 1 file markdown
-│   └── categories.json      6 danh mục
-├── assets/products/         Ảnh gốc — Astro tự sinh WebP/AVIF ở build time
-├── lib/
-│   ├── site.ts              Toàn bộ thông tin shop. Sửa duy nhất ở đây.
-│   └── format.ts            Định dạng VND, deep link Zalo, tính hạn dùng
-├── components/
-│   ├── LabelStrip.astro     Dải nhãn JAN + dung tích + phiếu công bố
-│   ├── ProductCard.astro
-│   ├── ZaloCta.astro        Nút nổi Zalo/gọi
-│   └── Seo.astro            Meta + JSON-LD
-└── pages/
-    ├── index.astro
-    ├── danh-muc/[category].astro
-    ├── san-pham/[...slug].astro
-    └── sitemap.xml.ts       Tự sinh, không cần @astrojs/sitemap
-```
+**Fonts.** Vietnamese diacritics must render correctly — test `ề ữ ỡ ặ` before swapping any display font; many fonts lack a Vietnamese subset.
 
-## Ghi chú kỹ thuật
+**Prices.** Medusa returns calculated prices as integers in the smallest currency unit; VND has no subunit, so `calculated_amount` is the VND value directly. Format at render time, don't pre-format strings.
 
-**Barcode trong `LabelStrip.astro` là biểu diễn thị giác, không quét được.** Nó suy ra từ chữ số JAN theo quy tắc cố định, không phải mã hoá EAN-13 hợp lệ. Nếu cần khách quét thật, cài `jsbarcode` và render SVG ở build time.
+**No online checkout by design.** The site links out to Zalo/phone instead of a cart+payment flow — this is intentional, not a missing feature.
 
-**Font.** Fraunces + Be Vietnam Pro + IBM Plex Mono, cả ba đều có bộ dấu tiếng Việt đầy đủ. Nếu đổi font display, kiểm tra `ề ữ ỡ ặ` trước — nhiều font display không có Vietnamese subset và sẽ fallback vỡ chữ.
+## Not implemented yet
 
-**Ảnh.** Đặt ảnh gốc ≥1200px chiều rộng vào `src/assets/products/`. Astro sinh nhiều kích thước và định dạng modern lúc build. Đừng đặt vào `public/` — ảnh trong `public/` không được tối ưu.
-
-**Giá.** Lưu dạng số nguyên VND (`285000`), format ở lúc render bằng `formatVnd()`. Không lưu chuỗi `"285.000đ"` — sẽ không sort và không đưa vào JSON-LD được.
-
-**JSON-LD.** Mỗi trang sản phẩm có `Product` schema với `priceCurrency: "VND"` và `gtin13`. Google hiện giá trong kết quả tìm kiếm dù site không có checkout. `availability: InStock` nói về tình trạng hàng, không phải khả năng thanh toán — dùng vậy là hợp lệ.
-
-## Chưa có, cân nhắc thêm sau
-
-- Tìm kiếm client-side (Pagefind — chạy lúc build, không cần server)
-- Trang so sánh giá/ml giữa các sản phẩm cùng loại
-- Form "để lại số, shop gọi lại" (Cloudflare Worker + Web3Forms, đều có free tier)
-- Trang tra cứu số phiếu công bố dẫn thẳng sang cổng Cục Quản lý Dược
+- Client-side search using `search-index.json.ts` (Pagefind or similar)
+- Price/ml comparison page across similar products
+- "Leave your number, we'll call back" form
+- Lookup page linking cosmetic license numbers to the Drug Administration portal

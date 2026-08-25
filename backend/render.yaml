@@ -1,0 +1,31 @@
+databases:
+  - name: jlp-medusa-db
+    plan: free
+    databaseName: medusa
+    user: medusa
+
+services:
+  - type: web
+    name: jlp-medusa-backend
+    runtime: node
+    plan: free
+    rootDir: apps/backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jlp-medusa-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: STORE_CORS
+        value: https://REPLACE_WITH_STOREFRONT_URL.pages.dev
+      - key: ADMIN_CORS
+        value: https://REPLACE_WITH_BACKEND_URL.onrender.com
+      - key: AUTH_CORS
+        value: https://REPLACE_WITH_BACKEND_URL.onrender.com,https://REPLACE_WITH_STOREFRONT_URL.pages.dev
