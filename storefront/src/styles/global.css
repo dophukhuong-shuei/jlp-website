@@ -68,21 +68,11 @@ a{color:inherit}
 body{top:0!important}
 .goog-text-highlight{background:none!important;box-shadow:none!important}
 
-/* hero */
-.hero{background:var(--card);border-bottom:1px solid var(--rule);padding:clamp(3rem,8vw,5.5rem) 0 clamp(2.5rem,6vw,4rem);
-  background-image:linear-gradient(var(--beni),var(--beni));background-size:3px 100%;background-repeat:no-repeat;background-position:left top}
-.hero .inner{max-width:46ch}
-.hero h1{font-size:var(--t-3xl);margin:.75rem 0 1.1rem}
-.hero em{font-style:italic;color:var(--beni);font-variation-settings:"SOFT" 60,"WONK" 1}
-.lede{font-size:var(--t-lg);color:var(--ink-soft);margin:0 0 1.75rem}
-.hero-actions{display:flex;align-items:center;gap:1.15rem;flex-wrap:wrap}
-.cta-primary{background:var(--chrome);color:var(--on-chrome);text-decoration:none;padding:.7rem 1.35rem;border-radius:var(--radius);font-weight:600;font-size:var(--t-sm)}
-.cta-primary:hover{background:var(--beni)}
-.count{color:var(--ink-faint)}
-
 /* hero — banner động: video nền (nếu có) + gradient chuyển màu làm placeholder + showcase ảnh sản phẩm */
 .hero{position:relative;overflow:hidden;background:var(--chrome);color:var(--on-chrome);
   padding:clamp(3.5rem,9vw,6.5rem) 0 clamp(3rem,7vw,5rem);border-bottom:none}
+.hero .inner{position:relative;z-index:1;max-width:46ch}
+.hero-grid{position:relative;z-index:1}
 .hero-bg{position:absolute;inset:0;z-index:0}
 .hero-bg video{width:100%;height:100%;object-fit:cover;opacity:.55}
 .hero-bg .fallback{position:absolute;inset:0;background:linear-gradient(120deg,var(--chrome),#2a3a5c,var(--beni),var(--chrome));
@@ -94,6 +84,9 @@ body{top:0!important}
 .hero em{font-style:italic;color:#ffb3bd;font-variation-settings:"SOFT" 60,"WONK" 1}
 .hero .lede{font-size:var(--t-lg);color:color-mix(in srgb,var(--on-chrome) 85%,transparent);margin:0 0 1.75rem}
 .hero .count{color:color-mix(in srgb,var(--on-chrome) 70%,transparent)}
+.hero-actions{display:flex;align-items:center;gap:1.15rem;flex-wrap:wrap}
+.cta-primary{background:var(--beni);color:#fff;text-decoration:none;padding:.7rem 1.35rem;border-radius:var(--radius);font-weight:600;font-size:var(--t-sm)}
+.cta-primary:hover{background:var(--chrome)}
 @media(prefers-reduced-motion:reduce){.hero-bg .fallback{animation:none!important;opacity:1}}
 
 /* campaign hero trang chủ — banner chính + 2 thẻ phụ, theo pattern Hasaki/Guardian */

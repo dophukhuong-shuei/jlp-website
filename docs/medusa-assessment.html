@@ -70,11 +70,9 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
 
-  header.hero {
-    margin-bottom: 3rem;
-  }
+  header.hero { margin-bottom: 2.5rem; }
   .kicker {
     font-family: "IBM Plex Mono", "SF Mono", Consolas, monospace;
     font-size: 0.78rem;
@@ -89,16 +87,12 @@
     margin: 0 0 0.9rem;
     letter-spacing: -0.01em;
   }
-  .lede {
-    font-size: 1.1rem;
-    color: var(--text-muted);
-    max-width: 62ch;
-    margin: 0;
-  }
+  .lede { font-size: 1.1rem; color: var(--text-muted); max-width: 65ch; margin: 0; }
 
-  .stat-row {
+  /* Agenda / table of contents */
+  .agenda {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
@@ -106,35 +100,40 @@
     overflow: hidden;
     margin: 2.2rem 0 3rem;
   }
-  .stat {
+  .agenda a {
+    display: block;
     background: var(--surface);
-    padding: 1.1rem 1.3rem;
-  }
-  .stat .n {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 1.5rem;
-    font-weight: 600;
+    padding: 0.85rem 1rem;
+    text-decoration: none;
     color: var(--text);
-  }
-  .stat .l {
     font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-top: 0.25rem;
   }
+  .agenda a .num {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .agenda a:hover { background: var(--accent-soft); }
 
-  section { margin-bottom: 3.2rem; }
+  section { margin-bottom: 3.4rem; scroll-margin-top: 1.5rem; }
+  .section-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
   h2 {
-    font-size: 1.45rem;
+    font-size: 1.5rem;
     margin: 0 0 1.1rem;
     padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--border);
     letter-spacing: -0.005em;
   }
-  h3 {
-    font-size: 1.05rem;
-    margin: 1.6rem 0 0.7rem;
-    color: var(--text);
-  }
+  h3 { font-size: 1.05rem; margin: 1.6rem 0 0.7rem; color: var(--text); }
   p { margin: 0 0 1rem; }
   .text-muted { color: var(--text-muted); }
 
@@ -146,28 +145,44 @@
     border-radius: 4px;
   }
 
-  .card-grid {
+  .stack-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 1.4rem 0 1.8rem;
   }
-  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+  .stack-item { background: var(--surface); padding: 1.1rem 1.2rem; }
+  .stack-item .role {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .stack-item .name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .stack-item .desc { font-size: 0.83rem; color: var(--text-muted); }
 
-  .card {
+  .reason-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.2rem 0;
+  }
+  .reason {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1.2rem 1.3rem;
+    padding: 1.1rem 1.2rem;
     box-shadow: var(--shadow);
   }
-  .card h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .card p { margin: 0; font-size: 0.92rem; color: var(--text-muted); }
+  .reason .icon { font-size: 1.3rem; margin-bottom: 0.5rem; display: block; }
+  .reason h4 { margin: 0 0 0.4rem; font-size: 0.95rem; }
+  .reason p { margin: 0; font-size: 0.87rem; color: var(--text-muted); }
 
   .pill {
     display: inline-flex;
@@ -184,65 +199,65 @@
   .pill.dormant { background: var(--warn-soft); color: var(--warn); }
   .pill.future { background: var(--future-soft); color: var(--future); }
 
-  .capability-table {
+  .data-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.93rem;
+    font-size: 0.91rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: var(--shadow);
   }
-  .capability-table th, .capability-table td {
+  .data-table th, .data-table td {
     text-align: left;
     padding: 0.7rem 1rem;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
   }
-  .capability-table th {
+  .data-table th {
     font-family: "IBM Plex Mono", monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
     background: var(--code-bg);
   }
-  .capability-table tr:last-child td { border-bottom: none; }
-  .capability-table td.status { white-space: nowrap; }
-  .table-scroll { overflow-x: auto; border-radius: 12px; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td.status { white-space: nowrap; }
+  .table-scroll { overflow-x: auto; border-radius: 12px; margin: 1.2rem 0; }
 
-  .compare {
+  .built-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
     margin: 1.2rem 0;
   }
-  @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
-  .compare .col {
-    border-radius: 12px;
-    padding: 1.3rem 1.4rem;
+  .built-card {
+    background: var(--surface);
     border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: var(--shadow);
   }
-  .compare .col.old { background: var(--surface); }
-  .compare .col.new { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
-  .compare .col h4 {
-    margin: 0 0 0.9rem;
-    font-size: 0.98rem;
+  .built-card .kind {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
   }
-  .compare ul { margin: 0; padding-left: 1.15rem; }
-  .compare li { margin-bottom: 0.55rem; font-size: 0.92rem; }
-  .compare li::marker { color: var(--text-muted); }
+  .built-card h4 { margin: 0 0 0.35rem; font-size: 0.95rem; }
+  .built-card code { font-size: 0.78em; }
+  .built-card p { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--text-muted); }
 
   .timeline {
     border-left: 2px solid var(--border);
     margin-left: 0.4rem;
     padding-left: 1.5rem;
   }
-  .timeline .step {
-    position: relative;
-    padding-bottom: 1.7rem;
-  }
+  .timeline .step { position: relative; padding-bottom: 1.7rem; }
   .timeline .step:last-child { padding-bottom: 0; }
   .timeline .step::before {
     content: "";
@@ -257,6 +272,29 @@
   }
   .timeline h4 { margin: 0 0 0.3rem; font-size: 0.98rem; }
   .timeline p { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+
+  .verdict-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.2rem 0;
+  }
+  .verdict {
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .verdict .score {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--good);
+    margin-bottom: 0.3rem;
+  }
+  .verdict.mid .score { color: var(--warn); }
+  .verdict h4 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+  .verdict p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
   .callout {
     background: var(--surface);
@@ -292,187 +330,418 @@
   <p class="lang-switch"><strong>EN</strong> · <a href="medusa-assessment.vi.html">VI</a></p>
 
   <header class="hero">
-    <p class="kicker">JLB / JLP — Technical Assessment</p>
-    <h1>Medusa as the storefront's data engine</h1>
+    <p class="kicker">JLB / JLP — Project Presentation</p>
+    <h1>Storefront &amp; Commerce Backend</h1>
     <p class="lede">
-      What Medusa currently powers on this site, why it already beats the original static-file approach,
-      and what it unlocks later without a rebuild.
+      Tech stack, rationale, comparison, what's built, what's next — and the feasibility of adding real
+      checkout and order management later.
     </p>
   </header>
 
-  <div class="stat-row">
-    <div class="stat">
-      <div class="n">Build-time</div>
-      <div class="l">Storefront fetches Medusa data only when building — zero runtime server cost</div>
-    </div>
-    <div class="stat">
-      <div class="n">3 of 8+</div>
-      <div class="l">Store API areas in active use — cart, checkout, orders, customers ship unused</div>
-    </div>
-    <div class="stat">
-      <div class="n">1 custom</div>
-      <div class="l">Admin extension already built (supplier bulk-import) proving the platform is extensible</div>
-    </div>
-  </div>
+  <nav class="agenda">
+    <a href="#stack"><span class="num">01</span>Tech Stack</a>
+    <a href="#why"><span class="num">02</span>Why This Stack</a>
+    <a href="#compare"><span class="num">03</span>Comparison</a>
+    <a href="#built"><span class="num">04</span>What's Built</a>
+    <a href="#ideas"><span class="num">05</span>Ideas Ahead</a>
+    <a href="#expansion"><span class="num">06</span>Expansion: Checkout &amp; Orders</a>
+  </nav>
 
-  <section>
-    <h2>What Medusa is actually doing today</h2>
+  <section id="stack">
+    <span class="section-num">01 / Tech Stack</span>
+    <h2>What the project runs on</h2>
+    <p>Two independently deployable pieces, connected by one API contract:</p>
+
+    <div class="stack-row">
+      <div class="stack-item">
+        <div class="role">Storefront</div>
+        <div class="name">Astro 7</div>
+        <div class="desc">Static site generator. Builds to plain HTML, deployed on Cloudflare Pages.</div>
+      </div>
+      <div class="stack-item">
+        <div class="role">Data source</div>
+        <div class="name">Medusa v2</div>
+        <div class="desc">Headless commerce backend. Node.js + PostgreSQL, exposes a Store API and an Admin dashboard.</div>
+      </div>
+      <div class="stack-item">
+        <div class="role">Data fetch</div>
+        <div class="name">Build-time only</div>
+        <div class="desc">Astro calls Medusa's Store API once, when building — never from the visitor's browser.</div>
+      </div>
+      <div class="stack-item">
+        <div class="role">Checkout</div>
+        <div class="name">None (by design)</div>
+        <div class="desc">Orders are closed manually over Zalo or phone — no cart, no online payment today.</div>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Layer</th><th>Package / Tool</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Frontend framework</td><td><code>astro</code></td><td>Static-site generation, routing, page templates</td></tr>
+          <tr><td>Backend framework</td><td><code>@medusajs/framework</code>, <code>@medusajs/medusa</code></td><td>Commerce core: products, categories, pricing, regions</td></tr>
+          <tr><td>Admin UI</td><td><code>@medusajs/admin-sdk</code>, <code>@medusajs/dashboard</code></td><td>Product/catalog management interface</td></tr>
+          <tr><td>API client</td><td><code>@medusajs/js-sdk</code></td><td>Typed calls from Astro to Medusa's Store API</td></tr>
+          <tr><td>Database</td><td>PostgreSQL</td><td>Medusa's data store — products, orders, everything</td></tr>
+          <tr><td>Storefront hosting</td><td>Cloudflare Pages</td><td>Free static hosting, global CDN</td></tr>
+          <tr><td>Backend hosting</td><td>Render / Railway (test)</td><td>Runs the Medusa Node process + Postgres</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="why">
+    <span class="section-num">02 / Why This Stack</span>
+    <h2>Why Astro + Medusa</h2>
+
+    <h3>Why Astro for the storefront</h3>
+    <div class="reason-grid">
+      <div class="reason">
+        <span class="icon">🔍</span>
+        <h4>SEO by default</h4>
+        <p>Every page ships as fully-rendered HTML. No JavaScript has to execute before search engines or link previews see the content — critical for a catalog whose main job is being found.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">⚡</span>
+        <h4>Minimal JavaScript</h4>
+        <p>Astro's "islands" model ships plain HTML/CSS unless a component needs interactivity. Visitors download a fraction of a typical React/Vue SPA — faster on mobile networks.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">🌐</span>
+        <h4>Static output on a CDN</h4>
+        <p>No server handles visitor traffic for the catalog. Cloudflare's edge serves HTML from the nearest location — faster and free at this project's scale.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">🧩</span>
+        <h4>Framework-agnostic when needed</h4>
+        <p>React/Vue/Svelte components can be mixed in only where interactivity is actually required (e.g. a future cart widget) without forcing a heavier rendering model on the whole site.</p>
+      </div>
+    </div>
+
+    <h3>Why Medusa for the backend</h3>
+    <div class="reason-grid">
+      <div class="reason">
+        <span class="icon">🗂️</span>
+        <h4>Structured commerce data</h4>
+        <p>Variants, calculated pricing, regions, stock levels — a real data model instead of hand-written text fields.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">🖥️</span>
+        <h4>Admin dashboard included</h4>
+        <p>Product and category management through a proper UI at <code>/app</code> — no code or git knowledge required to edit the catalog.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">🔌</span>
+        <h4>Headless by design</h4>
+        <p>Ships an API, not a rendering engine — the natural fit for a build-time data source feeding a static frontend.</p>
+      </div>
+      <div class="reason">
+        <span class="icon">📦</span>
+        <h4>Commerce modules pre-installed</h4>
+        <p>Cart, checkout, payment, orders, promotions, and customer accounts already ship in the core — dormant today, available without a platform change.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <span class="section-num">03 / Comparison</span>
+    <h2>vs. nopCommerce (ASP.NET MVC)</h2>
     <p>
-      The storefront (<code>storefront/src/lib/medusa.ts</code>) calls exactly three read-only Store API
-      surfaces, all at <strong>build time</strong> — never from the visitor's browser:
+      A useful comparison is against another real commerce platform, not a licensing model. nopCommerce
+      ships a full storefront, admin, and checkout out of the box on ASP.NET MVC. Evaluated against
+      <em>this project's actual scope</em> — a catalog with no online checkout — the two platforms trade off
+      differently:
     </p>
 
     <div class="table-scroll">
-      <table class="capability-table">
+      <table class="data-table">
         <thead>
-          <tr><th>Store API area</th><th>Status</th><th>How it's used here</th></tr>
+          <tr><th>Dimension</th><th>nopCommerce</th><th>Astro + Medusa (current)</th></tr>
         </thead>
         <tbody>
           <tr>
-            <td><code>product.list</code></td>
-            <td class="status"><span class="pill active">In use</span></td>
-            <td>Paginated product fetch per category/region, including calculated prices and stock levels.</td>
+            <td>Rendering model</td>
+            <td>Server-side render (Razor) on every request</td>
+            <td>Pre-built static HTML served from CDN — no render cost per visit</td>
           </tr>
           <tr>
-            <td><code>category.list</code></td>
-            <td class="status"><span class="pill active">In use</span></td>
-            <td>Populates category pages and navigation.</td>
+            <td>Page load speed</td>
+            <td>Depends on server + DB round-trip per request</td>
+            <td>Consistently fast — no query happens when a visitor loads the page</td>
           </tr>
           <tr>
-            <td><code>region.list</code></td>
-            <td class="status"><span class="pill active">In use</span></td>
-            <td>Grabs the default region so prices calculate correctly — single-region today.</td>
+            <td>Traffic spikes</td>
+            <td>Needs the app server/DB to scale with load</td>
+            <td>CDN absorbs it; backend is barely touched by visitor traffic</td>
           </tr>
           <tr>
-            <td>Pricing engine (<code>calculated_price</code>)</td>
-            <td class="status"><span class="pill active">In use</span></td>
-            <td>Real Medusa price calculation, not a hardcoded number — ready for tax/region rules later.</td>
+            <td>Hosting cost</td>
+            <td>.NET app server + SQL Server running continuously</td>
+            <td>Storefront hosting free/static; backend a small Node service, only needed for admin edits and rebuilds</td>
           </tr>
           <tr>
-            <td>Product <code>metadata</code></td>
-            <td class="status"><span class="pill active">In use</span></td>
-            <td>Escape hatch for JLB-specific fields: JAN code, origin, lot, license number, skin type, sale price.</td>
+            <td>Built-in commerce features</td>
+            <td>Cart, checkout, payments, promotions, multi-language — ready immediately</td>
+            <td>Equivalent modules exist in Medusa's core but are unconfigured — extra wiring required</td>
           </tr>
           <tr>
-            <td>Cart / Checkout / Payment</td>
-            <td class="status"><span class="pill dormant">Installed, unused</span></td>
-            <td>Ships with core Medusa. Not called — the site links to Zalo/phone instead of checking out online.</td>
-          </tr>
-          <tr>
-            <td>Customer accounts / Auth</td>
-            <td class="status"><span class="pill dormant">Installed, unused</span></td>
-            <td>No login, no order history — not needed for a catalog-only site.</td>
-          </tr>
-          <tr>
-            <td>Order management</td>
-            <td class="status"><span class="pill dormant">Installed, unused</span></td>
-            <td>Orders are closed manually over Zalo, outside Medusa entirely.</td>
-          </tr>
-          <tr>
-            <td>Promotions / rules engine</td>
-            <td class="status"><span class="pill dormant">Installed, unused</span></td>
-            <td>Sale pricing is done manually via metadata instead — simpler for a no-checkout site.</td>
+            <td>Deep domain customization</td>
+            <td>Requires learning nopCommerce's plugin architecture</td>
+            <td>Cosmetics-specific logic (JAN codes, license numbers) written directly in project code</td>
           </tr>
         </tbody>
       </table>
     </div>
 
+    <div class="verdict-row">
+      <div class="verdict">
+        <div class="score">Catalog-only</div>
+        <h4>Current scope</h4>
+        <p>Astro + Medusa fits tighter — free static hosting for visitors, a lightweight backend only for admin.</p>
+      </div>
+      <div class="verdict mid">
+        <div class="score">Full store</div>
+        <h4>If scope expands</h4>
+        <p>The comparison narrows — nopCommerce has checkout ready today; Medusa's equivalent modules exist but need wiring.</p>
+      </div>
+    </div>
+
     <div class="callout">
-      <strong>Why this matters:</strong> everything in the "installed, unused" rows already ships in the
-      backend's current dependencies (<code>@medusajs/medusa</code>, <code>@medusajs/framework</code>).
-      Turning them on later is a matter of wiring, not a new platform.
+      Either direction, no full rewrite is required from where the project stands today: moving to
+      nopCommerce means discarding the static Astro frontend entirely, while wiring up Medusa's dormant
+      modules builds on what's already deployed.
     </div>
-
-    <h3>Already proven extensible</h3>
-    <p>
-      This isn't theoretical — the backend has a real custom feature built on Medusa's extension points:
-      an <strong>admin bulk-import tool</strong> (<code>src/api/admin/import-supplier</code>) that reads a
-      supplier's Excel sheet, converts JPY→VND pricing, maps Japanese category names to the shop's own
-      categories, and creates products through Medusa's workflow engine — plus a custom screen bolted onto
-      the Admin dashboard itself for uploading the file. That's Medusa's workflow engine, module system, and
-      Admin UI extension points all exercised in production use already.
-    </p>
   </section>
 
-  <section>
-    <h2>Current stack vs. the original static-file plan</h2>
-    <p>
-      The project started as a fully static site: content lived in markdown files, edited through a
-      Keystatic admin panel writing directly to the git repo — a reasonable, genuinely free approach for a
-      small non-commercial catalog. Medusa replaces that content layer while keeping the site just as static
-      to visitors.
-    </p>
+  <section id="built">
+    <span class="section-num">04 / What's Built</span>
+    <h2>Pages, modules, and admin extensions in place</h2>
 
-    <div class="compare">
-      <div class="col old">
-        <h4>Markdown + Keystatic (original)</h4>
-        <ul>
-          <li>Product edits are git commits — fine solo, awkward for a non-technical shop owner or a second editor</li>
-          <li>No structured product model beyond what's hand-written in frontmatter — no calculated pricing, no stock field with real semantics</li>
-          <li>Bulk import means writing/pasting many files by hand</li>
-          <li>No admin dashboard beyond the CMS form — no reporting, no inventory view</li>
-          <li>Zero path to checkout later without discarding the content layer entirely</li>
-        </ul>
+    <h3>Storefront pages</h3>
+    <div class="built-grid">
+      <div class="built-card">
+        <div class="kind">Page</div>
+        <h4>Home</h4>
+        <code>src/pages/index.astro</code>
+        <p>Featured products, categories, sale items, newest arrivals — all fetched from Medusa at build time.</p>
       </div>
-      <div class="col new">
-        <h4>Astro + Medusa (current)</h4>
-        <ul>
-          <li>Real admin dashboard at <code>/app</code> — product, category, and pricing edits with a proper UI, no git needed</li>
-          <li>Structured commerce data model: variants, calculated prices, regions, inventory quantities — not just text fields</li>
-          <li>Bulk supplier import already built, using Medusa's workflow engine — scales past hand-editing</li>
-          <li>Same result for visitors: a fully static site, same hosting cost, same performance</li>
-          <li>Direct, no-rebuild path to checkout, accounts, and orders when the business needs them</li>
-        </ul>
+      <div class="built-card">
+        <div class="kind">Page</div>
+        <h4>Category listing</h4>
+        <code>src/pages/categories/[handle].astro</code>
+        <p>Products filtered by category, generated as a static page per category.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Page</div>
+        <h4>Product detail</h4>
+        <code>src/pages/products/[handle].astro</code>
+        <p>Full product info: variants, pricing, JAN code, origin, lot, license number, skin type, attributes.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Page</div>
+        <h4>Promotions</h4>
+        <code>src/pages/promotions.astro</code>
+        <p>Products flagged on-sale or with a gift, via metadata fields.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Page</div>
+        <h4>About</h4>
+        <code>src/pages/about.astro</code>
+        <p>Shop information page.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Data endpoint</div>
+        <h4>Search index</h4>
+        <code>src/pages/search-index.json.ts</code>
+        <p>Static JSON of all products, generated at build time — ready to power client-side search.</p>
       </div>
     </div>
 
-    <p class="text-muted">
-      The trade-off: Medusa needs a running Node service and a database, where Keystatic needed neither.
-      That cost is paid once, in hosting the backend — it doesn't touch the storefront's static, free-tier
-      deployment on Cloudflare Pages.
-    </p>
+    <h3>Components</h3>
+    <div class="built-grid">
+      <div class="built-card">
+        <div class="kind">Component</div>
+        <h4>Layout</h4>
+        <code>components/Layout.astro</code>
+        <p>Shared page shell — header, nav, footer.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Component</div>
+        <h4>ProductCard</h4>
+        <code>components/ProductCard.astro</code>
+        <p>Reusable product tile used across home, category, and promotions pages.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Component</div>
+        <h4>LabelStrip</h4>
+        <code>components/LabelStrip.astro</code>
+        <p>JAN code, volume, license number strip shown on product pages.</p>
+      </div>
+    </div>
+
+    <h3>Backend / Medusa extensions</h3>
+    <div class="built-grid">
+      <div class="built-card">
+        <div class="kind">Custom API route</div>
+        <h4>Supplier bulk import</h4>
+        <code>api/admin/import-supplier/route.ts</code>
+        <p>Reads a supplier's Excel sheet, converts JPY→VND, maps Japanese category names, and creates products via Medusa's workflow engine.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Custom Admin screen</div>
+        <h4>Import UI</h4>
+        <code>admin/routes/import-hang/page.tsx</code>
+        <p>A dedicated screen bolted onto the Admin dashboard for uploading the supplier file and setting the exchange rate.</p>
+      </div>
+      <div class="built-card">
+        <div class="kind">Core module in use</div>
+        <h4>Product / Category / Pricing</h4>
+        <p>Standard Medusa modules — <code>product.list</code>, <code>category.list</code>, <code>calculated_price</code> — power every storefront page.</p>
+      </div>
+    </div>
+
+    <h3>Store API surface actually in use</h3>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Area</th><th>Status</th><th>Usage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>product.list</code></td><td class="status"><span class="pill active">In use</span></td><td>Paginated product fetch per category/region, with calculated prices and stock</td></tr>
+          <tr><td><code>category.list</code></td><td class="status"><span class="pill active">In use</span></td><td>Category pages and navigation</td></tr>
+          <tr><td><code>region.list</code></td><td class="status"><span class="pill active">In use</span></td><td>Default region for price calculation — single-region today</td></tr>
+          <tr><td>Pricing engine</td><td class="status"><span class="pill active">In use</span></td><td>Real calculated prices, ready for tax/region rules later</td></tr>
+          <tr><td>Product <code>metadata</code></td><td class="status"><span class="pill active">In use</span></td><td>JAN code, origin, lot, license number, skin type, sale price, gift text</td></tr>
+          <tr><td>Cart / Checkout / Payment</td><td class="status"><span class="pill dormant">Installed, unused</span></td><td>Ships in core — not called; site links to Zalo/phone instead</td></tr>
+          <tr><td>Customer / Auth</td><td class="status"><span class="pill dormant">Installed, unused</span></td><td>No login, no order history today</td></tr>
+          <tr><td>Order management</td><td class="status"><span class="pill dormant">Installed, unused</span></td><td>Orders closed manually via Zalo, outside Medusa</td></tr>
+          <tr><td>Promotions engine</td><td class="status"><span class="pill dormant">Installed, unused</span></td><td>Sale pricing done manually via metadata instead</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <section>
-    <h2>What this unlocks later</h2>
-    <p>
-      Because the commerce modules are already part of the installed backend, expanding past a catalog-only
-      site is additive — new wiring, not a new platform.
-    </p>
-
+  <section id="ideas">
+    <span class="section-num">05 / Ideas Ahead</span>
+    <h2>What's worth building next</h2>
     <div class="timeline">
       <div class="step">
-        <h4>Real checkout</h4>
-        <p>Register a payment provider module (Stripe, or a Vietnam-relevant gateway like VNPay/MoMo as a custom provider), then switch the storefront from build-time-only reads to using the Cart and Payment Session APIs at runtime. This is the one change that requires a live server instead of pure static hosting.</p>
+        <h4>Webhook-triggered rebuilds</h4>
+        <p>Medusa calls a Cloudflare Pages deploy hook whenever a product, price, or stock level changes in the Admin — closes the gap between editing data and the static site reflecting it, without a manual redeploy.</p>
       </div>
       <div class="step">
-        <h4>Order management</h4>
-        <p>Once carts exist, Medusa's Order module gives order history, status tracking, and confirmation emails — visible immediately in the same Admin dashboard already in use.</p>
+        <h4>Client-side search (Pagefind)</h4>
+        <p>An index built alongside the site, searchable entirely in the visitor's browser — no server, no added hosting cost. <code>search-index.json.ts</code> already produces the data this would consume.</p>
       </div>
       <div class="step">
-        <h4>Customer accounts</h4>
-        <p>The Customer/Auth module is part of the same install — login, saved addresses, and order history for repeat buyers, without adding a new system.</p>
+        <h4>"Call me back" lead capture</h4>
+        <p>A lightweight Cloudflare Worker (or Astro API route) that takes a phone number and forwards it to Zalo/email — captures interest without requiring the visitor to message first.</p>
       </div>
       <div class="step">
-        <h4>Promotions and rules-based pricing</h4>
-        <p>Today's "sale price" is a manual metadata field. Medusa's promotion engine (already installed, unused) supports discount codes, automatic rules, and bundle pricing when that complexity is actually needed.</p>
+        <h4>License number lookup</h4>
+        <p>A page linking each product's cosmetic license number to the Drug Administration's public portal — reinforces the "verifiable origin" positioning already present in the product pages.</p>
       </div>
       <div class="step">
-        <h4>Multi-region / multi-currency</h4>
-        <p>The storefront currently assumes one region and VND. Medusa's region/currency/tax modules support more without new packages — the code already calls the region API, it just isn't fed more than one region yet.</p>
+        <h4>Incremental cart, before full checkout</h4>
+        <p>Ship Medusa's Cart API alone (no payment) first — a real "add to cart" experience that still ends in a Zalo handoff with the cart contents pre-filled, as a bridge toward full payment later.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="expansion">
+    <span class="section-num">06 / Expansion</span>
+    <h2>Checkout &amp; order management</h2>
+    <p>
+      This is the one expansion path that changes the architecture rather than just adding a page — worth
+      walking through in detail: what breaks, what has to change, and how feasible it actually is given
+      what's already built.
+    </p>
+
+    <h3>Why this is architecturally different</h3>
+    <p>
+      Everything built so far works because the site is <strong>read-only and static</strong> — Astro asks
+      Medusa for products once, at build time, and the result doesn't change until the next build. A cart
+      and an order are not catalog data — they're <strong>live, per-visitor state</strong> that changes by
+      the second (items added, stock reserved, payment confirmed, status updated). A build produces one
+      shared snapshot for every visitor; it cannot represent one specific visitor's cart right now.
+    </p>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Today (catalog only)</th><th>With real checkout</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Astro fetches products from Medusa once, at build time</td>
+            <td>The storefront needs a piece that talks to Medusa live, per visitor — cart, payment, order status</td>
+          </tr>
+          <tr>
+            <td>Output is plain static HTML files on a CDN</td>
+            <td>Cart/checkout pages need a running process (an Astro API route/server island, or a small separate app) calling Medusa's Cart and Payment APIs on demand</td>
+          </tr>
+          <tr>
+            <td>No order data exists on the storefront side</td>
+            <td>Orders live in Medusa; the storefront shows "your order status" without waiting for a rebuild</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>How data sync works once checkout is live</h3>
+    <p>Medusa remains the single source of truth throughout — no second database, no custom sync job:</p>
+    <div class="timeline">
+      <div class="step">
+        <h4>Catalog stays build-time — unchanged</h4>
+        <p>Product listing, category, and detail pages keep working exactly as today: static, fast, free to host. Browsing never needs a live call to Medusa.</p>
+      </div>
+      <div class="step">
+        <h4>Cart/checkout becomes a live island</h4>
+        <p>Only cart and checkout screens run code calling Medusa's Store API directly — <code>cart.create</code>, <code>cart.addLineItem</code>, <code>cart.complete</code>. Astro supports this today via API routes or server islands, without abandoning static output for the rest of the site.</p>
+      </div>
+      <div class="step">
+        <h4>Order status is queried live, not rebuilt</h4>
+        <p>"My order" pages query Medusa's Order API the same way. The Admin dashboard shows the identical order immediately — same database, no duplication.</p>
+      </div>
+      <div class="step">
+        <h4>Catalog freshness after checkout ships</h4>
+        <p>Stock changing from real orders is exactly why the webhook-rebuild idea (section 05) becomes worth adding at this point — keeps the static catalog from drifting from what checkout actually allows a customer to buy.</p>
+      </div>
+    </div>
+
+    <h3>Feasibility &amp; convenience assessment</h3>
+    <div class="verdict-row">
+      <div class="verdict">
+        <div class="score">Low risk</div>
+        <h4>Foundation already in place</h4>
+        <p>Cart, Payment, and Order modules ship in the currently-installed Medusa core — no new backend platform, no data migration.</p>
+      </div>
+      <div class="verdict mid">
+        <div class="score">Medium effort</div>
+        <h4>New moving part required</h4>
+        <p>A live-calling layer (API routes or server islands) has to be added to Astro — new code, not new infrastructure category.</p>
+      </div>
+      <div class="verdict">
+        <div class="score">No rewrite</div>
+        <h4>Catalog pages untouched</h4>
+        <p>Every page built in section 04 keeps working exactly as-is; only cart/checkout/order screens are new.</p>
       </div>
     </div>
 
     <div class="callout">
-      <strong>Bottom line:</strong> the current site pays a small, one-time hosting cost for a Node service
-      and database it barely uses today — in exchange for a real commerce backend that's already been
-      customized once (supplier import) and can absorb checkout, accounts, and promotions later without
-      replacing the storefront or its hosting model.
+      <strong>Bottom line:</strong> adding checkout and order management is feasible without discarding
+      anything already built — it's an additive change to the storefront (a live layer for cart/checkout)
+      and a configuration change to the backend (enabling payment providers), not a platform migration. The
+      convenience payoff is that Medusa's Admin dashboard — already in daily use for products — gains order
+      visibility for free, since orders and products live in the same database from day one.
     </div>
   </section>
 
   <footer>
-    Based on the codebase at <code>backend/apps/backend</code> and <code>storefront/src/lib/medusa.ts</code> as of this review.
+    Based on the codebase at <code>backend/apps/backend</code> and <code>storefront/src</code> as of this review.
   </footer>
 </div>
 </body>
