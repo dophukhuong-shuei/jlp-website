@@ -32,6 +32,42 @@ services:
     volumes:
       - jlb_redis_data:/data
 
+  backend:
+    build:
+      context: ./backend
+    container_name: jlb-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://medusa:medusa@postgres:5432/medusa_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      COOKIE_SECRET: ${COOKIE_SECRET:-change-me-in-production}
+      STORE_CORS: ${STORE_CORS:-http://localhost:8080}
+      ADMIN_CORS: ${ADMIN_CORS:-http://localhost:9000}
+      AUTH_CORS: ${AUTH_CORS:-http://localhost:9000}
+    ports:
+      - "9000:9000"
+    # Lần đầu chạy: docker compose exec backend npx medusa db:migrate
+    #               docker compose exec backend npx medusa user -e admin@jlb.local -p <password>
+
+  storefront:
+    build:
+      context: ./storefront
+      args:
+        MEDUSA_BACKEND_URL: ${MEDUSA_BACKEND_URL:-http://localhost:9000}
+        MEDUSA_PUBLISHABLE_KEY: ${MEDUSA_PUBLISHABLE_KEY}
+    container_name: jlb-storefront
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4321:80"
+    # Backend phải ĐANG CHẠY và có publishable key hợp lệ lúc build image này,
+    # vì Astro fetch dữ liệu sản phẩm lúc build, không phải lúc runtime.
+
 volumes:
   jlb_postgres_data:
   jlb_redis_data:

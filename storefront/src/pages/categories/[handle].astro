@@ -1,6 +1,7 @@
 ---
 import Layout from "../../components/Layout.astro";
 import ProductCard from "../../components/ProductCard.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { getAllProducts, getCategories, toCatalogItem } from "../../lib/medusa";
 import { site } from "../../lib/site";
 
@@ -21,9 +22,13 @@ const minPrice = prices.length ? Math.min(...prices) : 0;
 const maxPrice = prices.length ? Math.max(...prices) : 0;
 ---
 
-<Layout title={`${category.name} — ${site.name}`}>
+<Layout
+  title={`${category.name} — ${site.name}`}
+  description={`Mua ${category.name.toLowerCase()} nội địa Nhật chính ngạch — tra được mã JAN, giá tốt, giao 1–2 ngày.`}
+>
   <section class="block">
     <div class="wrap">
+      <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: category.name }]} />
       <div class="sec-head">
         <h2>{category.name}</h2>
         <p class="eyebrow">{items.length} sản phẩm</p>

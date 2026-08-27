@@ -28,7 +28,11 @@ const categoryCards = await Promise.all(
 );
 ---
 
-<Layout title={`${site.name} — Catalog mỹ phẩm Nhật`}>
+<Layout
+  title={`${site.name} — Catalog mỹ phẩm Nhật`}
+  description="Mỹ phẩm nội địa Nhật nhập chính ngạch, tra được mã JAN và số phiếu công bố. Đặt hàng qua Zalo hoặc điện thoại, giao 1–2 ngày nội thành."
+  image={showcaseImages[0]?.thumbnail}
+>
   <section class="campaign">
     <div class="wrap">
       <div class="campaign-main">

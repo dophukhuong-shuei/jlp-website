@@ -5,9 +5,13 @@ import { getCategories } from "../lib/medusa";
 
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
 }
-const { title } = Astro.props;
+const { title, description = site.tagline, image } = Astro.props;
 const categories = await getCategories();
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://example.com");
+const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
 
 const CAT_ICONS: Record<string, string> = {
   "Dưỡng da": "🧴",
@@ -24,6 +28,30 @@ const CAT_ICONS: Record<string, string> = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: site.name,
+      image,
+      telephone: site.phone,
+      email: site.email,
+      address: { "@type": "PostalAddress", streetAddress: site.address, addressCountry: "VN" },
+      openingHours: site.hours,
+      url: canonicalUrl.origin,
+    })} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,7 +65,28 @@ const CAT_ICONS: Record<string, string> = {
         const theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         if (theme === "dark") document.documentElement.dataset.theme = "dark";
       })();
+
+      // Mặc định hiển thị tiếng Nhật cho khách lần đầu vào site (chưa từng chọn ngôn ngữ).
+      // Khách vẫn đổi được sang VI/EN qua dropdown — lựa chọn đó sẽ được nhớ cho lần sau.
+      (function () {
+        const hasChosenLang = document.cookie.indexOf("googtrans=") !== -1;
+        if (!hasChosenLang) {
+          document.cookie = "googtrans=/vi/ja; path=/;";
+          document.cookie = "googtrans=/vi/ja; path=/; domain=" + location.hostname + ";";
+        }
+      })();
     </script>
+    {gaId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline define:vars={{ gaId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag("js", new Date());
+          gtag("config", gaId);
+        </script>
+      </>
+    )}
   </head>
   <body>
     <div class="utility">
@@ -122,10 +171,12 @@ const CAT_ICONS: Record<string, string> = {
       <div class="wrap fine data">
         <span>© {new Date().getFullYear()} {site.name}</span>
         <span>Website trưng bày sản phẩm — đặt hàng qua Zalo hoặc điện thoại</span>
+        <span><a href="/faq/">Câu hỏi thường gặp</a> · <a href="/privacy-policy/">Chính sách bảo mật</a></span>
       </div>
     </footer>
 
     <div class="dock">
+      <span class="response-promise">Phản hồi trong ~15 phút giờ hành chính</span>
       <a class="z" href={site.zaloUrl} target="_blank" rel="noopener">Chat Zalo</a>
       <a class="c" href={site.phoneHref}>{site.phone}</a>
     </div>

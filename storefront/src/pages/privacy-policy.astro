@@ -1,0 +1,40 @@
+---
+import Layout from "../components/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { site } from "../lib/site";
+---
+
+<Layout
+  title={`Chính sách bảo mật — ${site.name}`}
+  description="Chính sách bảo mật thông tin khách hàng của website."
+>
+  <section class="block">
+    <div class="wrap" style="max-width:68ch">
+      <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: "Chính sách bảo mật" }]} />
+      <div class="sec-head"><h2>Chính sách bảo mật</h2></div>
+      <div style="color:var(--ink-soft);font-size:var(--t-sm);display:flex;flex-direction:column;gap:1rem">
+        <p>
+          Website {site.name} chỉ dùng để trưng bày sản phẩm. Chúng tôi không thu thập thông tin thanh toán qua
+          website — mọi đơn hàng được chốt trực tiếp qua Zalo hoặc điện thoại với đội ngũ tư vấn.
+        </p>
+        <p>
+          Khi bạn liên hệ qua Zalo hoặc điện thoại, thông tin bạn cung cấp (họ tên, số điện thoại, địa chỉ nhận
+          hàng) chỉ được dùng để xử lý đơn hàng và chăm sóc khách hàng, không chia sẻ cho bên thứ ba ngoài mục đích
+          giao nhận hàng.
+        </p>
+        <p>
+          Website có thể sử dụng công cụ phân tích lưu lượng truy cập (ví dụ Google Analytics) để cải thiện trải
+          nghiệm người dùng. Dữ liệu này ở dạng tổng hợp, không định danh cá nhân.
+        </p>
+        <p>
+          Nếu bạn có câu hỏi về việc xử lý thông tin cá nhân, vui lòng liên hệ qua Zalo ({site.zaloUrl}) hoặc gọi{" "}
+          {site.phone}.
+        </p>
+        <p style="font-size:var(--t-xs);color:var(--ink-faint)">
+          Nội dung trang này là chính sách bảo mật cơ bản, cần được rà soát bởi bộ phận pháp lý trước khi công bố
+          chính thức nếu công ty triển khai thu thập/lưu trữ thêm dữ liệu khách hàng trong tương lai.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

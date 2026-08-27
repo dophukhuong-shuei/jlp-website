@@ -10,7 +10,10 @@ const onSaleCount = items.filter((i) => i.onSale).length;
 const giftCount = items.filter((i) => i.gift).length;
 ---
 
-<Layout title={`Khuyến mãi — ${site.name}`}>
+<Layout
+  title={`Khuyến mãi — ${site.name}`}
+  description={`${onSaleCount} sản phẩm đang giảm giá và ${giftCount} sản phẩm có tặng kèm — mỹ phẩm nội địa Nhật chính ngạch.`}
+>
   <section class="hero" style="min-height:220px">
     <div class="hero-bg"><div class="fallback"></div></div>
     <div class="wrap hero-grid" style="grid-template-columns:1fr">

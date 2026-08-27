@@ -1,0 +1,63 @@
+---
+import Layout from "../components/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { site } from "../lib/site";
+
+const faqs = [
+  {
+    q: "Làm sao để biết sản phẩm là hàng thật, không phải hàng nhái?",
+    a: "Mỗi sản phẩm trên website đều hiển thị mã JAN và số phiếu công bố mỹ phẩm. Bạn có thể đối chiếu mã JAN với vỏ hộp thực tế, hoặc tra số phiếu công bố trên cổng thông tin của Cục Quản lý Dược trước khi đặt hàng.",
+  },
+  {
+    q: "Đặt hàng như thế nào?",
+    a: `Website chỉ trưng bày sản phẩm, không thanh toán online. Bạn chọn sản phẩm rồi chat Zalo (${site.zaloUrl}) hoặc gọi ${site.phone} để chốt đơn và chọn hình thức thanh toán trực tiếp với shop.`,
+  },
+  {
+    q: "Thời gian giao hàng bao lâu?",
+    a: "Nội thành thường giao trong 1–2 ngày. Các khu vực khác sẽ được tư vấn thời gian cụ thể khi chốt đơn qua Zalo.",
+  },
+  {
+    q: "Có đổi trả được không?",
+    a: "Sản phẩm lỗi do nhà sản xuất được đổi trong vòng 7 ngày kể từ ngày nhận hàng. Vui lòng giữ nguyên bao bì và liên hệ qua Zalo để được hỗ trợ.",
+  },
+  {
+    q: "Tôi không biết loại da của mình phù hợp với sản phẩm nào, có được tư vấn không?",
+    a: "Có. Bạn có thể chat Zalo mô tả loại da và nhu cầu của mình, shop sẽ tư vấn sản phẩm phù hợp trước khi bạn đặt hàng.",
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<Layout title={`Câu hỏi thường gặp — ${site.name}`} description="Giải đáp các câu hỏi thường gặp về đặt hàng, giao hàng, đổi trả và cách kiểm tra hàng chính hãng.">
+  <section class="block">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: "Câu hỏi thường gặp" }]} />
+      <div class="sec-head"><h2>Câu hỏi thường gặp</h2></div>
+      <div class="faq-list">
+        {faqs.map((f) => (
+          <details class="faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</Layout>
+
+<style>
+  .faq-list { display: flex; flex-direction: column; gap: 0.75rem; max-width: 68ch; }
+  .faq-item { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0.9rem 1.1rem; background: var(--card); }
+  .faq-item summary { cursor: pointer; font-weight: 600; }
+  .faq-item p { margin: 0.6rem 0 0; color: var(--ink-soft); font-size: var(--t-sm); }
+</style>

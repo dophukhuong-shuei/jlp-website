@@ -1,6 +1,7 @@
 ---
 import Layout from "../../components/Layout.astro";
 import LabelStrip from "../../components/LabelStrip.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { getAllProducts, toCatalogItem } from "../../lib/medusa";
 import { boxSvg, formatPrice, placeholderBg } from "../../lib/format";
 import { site } from "../../lib/site";
@@ -16,11 +17,22 @@ export async function getStaticPaths() {
 const { item } = Astro.props;
 const discountPct =
   item.wasPrice && item.price ? Math.round((1 - item.price / item.wasPrice) * 100) : null;
+const category = item.categories[0];
+const description = item.brand
+  ? `${item.title} — ${item.brand}, hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`
+  : `${item.title} — hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`;
 ---
 
-<Layout title={`${item.title} — ${site.name}`}>
+<Layout title={`${item.title} — ${site.name}`} description={description} image={item.thumbnail}>
   <section class="block">
     <div class="wrap">
+      <Breadcrumbs
+        items={[
+          { label: "Trang chủ", href: "/" },
+          ...(category ? [{ label: category.name, href: `/categories/${category.handle}/` }] : []),
+          { label: item.title },
+        ]}
+      />
       <a class="back" href="/">← Danh sách sản phẩm</a>
       <div class="detail">
         <figure class="mainimg">

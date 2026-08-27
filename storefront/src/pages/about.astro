@@ -3,7 +3,7 @@ import Layout from "../components/Layout.astro";
 import { site } from "../lib/site";
 ---
 
-<Layout title={`Giới thiệu — ${site.name}`}>
+<Layout title={`Giới thiệu — ${site.name}`} description={site.about}>
   <section class="hero">
     <div class="wrap inner">
       <p class="eyebrow">Về {site.name}</p>
@@ -28,6 +28,15 @@ import { site } from "../lib/site";
             <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">Đặt qua Zalo</a>
             <a class="btn-alt" href={site.phoneHref}>Gọi {site.phone}</a>
           </div>
+          <iframe
+            title="Bản đồ chỉ đường"
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`}
+            width="100%"
+            height="260"
+            style="border:0;border-radius:var(--radius);margin-top:1.5rem"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
         <div>
           <p class="eyebrow brand">Cam kết</p>
