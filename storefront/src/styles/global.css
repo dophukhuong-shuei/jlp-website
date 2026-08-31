@@ -60,8 +60,9 @@ a{color:inherit}
 #lang-btn{display:flex;align-items:center;gap:.3rem;height:34px;padding:0 .6rem;border:1px solid var(--rule);border-radius:var(--radius);background:var(--card);color:var(--ink-soft);font-size:var(--t-sm);cursor:pointer;font-family:var(--font-label)}
 #lang-btn:hover{color:var(--ink);border-color:var(--ink)}
 #lang-menu{position:absolute;right:0;top:calc(100% + .35rem);background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);list-style:none;margin:0;padding:.35rem;min-width:140px;box-shadow:0 6px 18px rgb(20 33 58/.15);z-index:30}
-#lang-menu button{display:block;width:100%;text-align:left;padding:.45rem .6rem;background:none;border:none;font-size:var(--t-sm);color:var(--ink-soft);cursor:pointer;border-radius:var(--radius)}
-#lang-menu button:hover{background:var(--paper);color:var(--ink)}
+#lang-menu a{display:block;width:100%;text-align:left;padding:.45rem .6rem;background:none;border:none;font-size:var(--t-sm);color:var(--ink-soft);cursor:pointer;border-radius:var(--radius);text-decoration:none}
+#lang-menu a:hover{background:var(--paper);color:var(--ink)}
+#lang-menu a[aria-current="true"]{color:var(--ink);font-weight:600}
 
 /* ẩn UI mặc định của Google Website Translator, dùng dropdown tự làm ở trên thay thế */
 .goog-te-banner-frame,.skiptranslate>iframe{display:none!important}

@@ -1,0 +1,299 @@
+---
+import Layout from "../Layout.astro";
+import ProductCard from "../ProductCard.astro";
+import { getAllProducts, getCategories, medusa, toCatalogItem } from "../../lib/medusa";
+import { site } from "../../lib/site";
+import { localizePath, t, translateCategoryName, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const dict = t(locale);
+const L = (p: string) => localizePath(locale, p);
+
+const products = await getAllProducts();
+const items = products.map((p) => toCatalogItem(p, locale));
+const featured = items.filter((i) => i.thumbnail).slice(0, 8);
+const showcaseImages = items.filter((i) => i.thumbnail).slice(0, 4);
+const promoImage = items.find((i) => i.thumbnail)?.thumbnail;
+
+const onSaleItems = items.filter((i) => i.onSale || i.gift).slice(0, 8);
+const newestItems = [...items]
+  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  .slice(0, 8);
+
+const categories = await getCategories();
+const categoryCards = await Promise.all(
+  categories.map(async (c) => {
+    const { count, products: sample } = await medusa.store.product.list({
+      category_id: c.id,
+      limit: 1,
+      fields: "thumbnail",
+    });
+    return { ...c, count, thumbnail: sample[0]?.thumbnail ?? null };
+  }),
+);
+
+const COPY = {
+  vi: {
+    heroEyebrow: "Hàng nội địa Nhật · Nhập chính ngạch",
+    heroTitle: "Mỗi sản phẩm đều có mã JAN để đối chiếu",
+    heroCta: "Xem cách kiểm tra hàng thật",
+    onSaleTag: "Đang khuyến mãi",
+    newTag: "Hàng mới về tuần này",
+    b1t: "Hàng chính ngạch", b1: "Tra được mã JAN, phiếu công bố",
+    b2t: "Giao nhanh nội thành", b2: "1–2 ngày ở TP.HCM",
+    b3t: "Đặt hàng qua Zalo", b3: "Không thanh toán online",
+    b4t: "Đổi hàng lỗi", b4: "Trong 7 ngày nhận hàng",
+    categoriesTitle: "Danh mục",
+    groups: (n: number) => `${n} nhóm sản phẩm`,
+    productsCount: (n: number) => `${n} sản phẩm`,
+    featuredTitle: "Sản phẩm nổi bật",
+    seeByCategory: "Xem theo danh mục →",
+    onSaleTitle: "Đang khuyến mãi",
+    seeAllPromo: "Xem tất cả khuyến mãi →",
+    aboutEyebrow: (name: string) => `Về ${name}`,
+    aboutTitle: "Mỹ phẩm Nhật, tra cứu được nguồn gốc",
+    aboutCta: "Xem trang giới thiệu",
+    newArrivalsTitle: "Hàng mới về",
+    updated: "Cập nhật gần nhất",
+    verifyTitle: "Cách tự kiểm tra hàng thật",
+    steps: [
+      { h: "Quét mã JAN trên vỏ hộp", p: "Mã 13 số in dưới barcode phải khớp với mã ghi trên trang sản phẩm. Lệch một số là hàng không cùng lô nhập." },
+      { h: "Đối chiếu số phiếu công bố", p: "Mỗi sản phẩm nhập hợp pháp đều có phiếu công bố sản phẩm mỹ phẩm. Số này tra được trên cổng thông tin của Cục Quản lý Dược." },
+      { h: "Kiểm tra mã lô và hạn dùng", p: "Mã lô dập nổi ở đáy hộp, không phải dán decal. Hạn dùng còn tối thiểu 12 tháng khi hàng đến tay bạn." },
+    ],
+    ctaTitle: "Cần tư vấn chọn sản phẩm?",
+    ctaBody: "Chat Zalo để được hỗ trợ chọn đúng loại da, đúng nhu cầu — phản hồi trong giờ làm việc.",
+    ctaBtn: "Chat Zalo ngay",
+    metaTitle: (name: string) => `${name} — Catalog mỹ phẩm Nhật`,
+    metaDesc: "Mỹ phẩm nội địa Nhật nhập chính ngạch, tra được mã JAN và số phiếu công bố. Đặt hàng qua Zalo hoặc điện thoại, giao 1–2 ngày nội thành.",
+  },
+  en: {
+    heroEyebrow: "Genuine Japanese domestic goods · Officially imported",
+    heroTitle: "Every product has a JAN code you can verify",
+    heroCta: "See how to verify authenticity",
+    onSaleTag: "On sale now",
+    newTag: "New arrivals this week",
+    b1t: "Officially imported", b1: "JAN code and license number available",
+    b2t: "Fast local delivery", b2: "1–2 days in Ho Chi Minh City",
+    b3t: "Order via Zalo", b3: "No online payment",
+    b4t: "Defect exchange", b4: "Within 7 days of receipt",
+    categoriesTitle: "Categories",
+    groups: (n: number) => `${n} product groups`,
+    productsCount: (n: number) => `${n} products`,
+    featuredTitle: "Featured products",
+    seeByCategory: "Browse by category →",
+    onSaleTitle: "On sale now",
+    seeAllPromo: "See all promotions →",
+    aboutEyebrow: (name: string) => `About ${name}`,
+    aboutTitle: "Japanese cosmetics, traceable origin",
+    aboutCta: "See about page",
+    newArrivalsTitle: "New arrivals",
+    updated: "Recently updated",
+    verifyTitle: "How to verify authenticity yourself",
+    steps: [
+      { h: "Scan the JAN code on the box", p: "The 13-digit code under the barcode must match the one on the product page. A mismatch means a different import batch." },
+      { h: "Check the cosmetic license number", p: "Every legally imported product carries a cosmetic license number, verifiable on the Drug Administration's portal." },
+      { h: "Check the batch code and expiry", p: "The batch code is embossed at the bottom of the box, not a sticker. Expiry should be at least 12 months out on arrival." },
+    ],
+    ctaTitle: "Need help choosing a product?",
+    ctaBody: "Chat with us on Zalo for advice on the right product for your skin type — we reply during business hours.",
+    ctaBtn: "Chat on Zalo now",
+    metaTitle: (name: string) => `${name} — Japanese cosmetics catalog`,
+    metaDesc: "Genuine Japanese domestic cosmetics, officially imported, with verifiable JAN codes and license numbers. Order via Zalo or phone, 1–2 day local delivery.",
+  },
+  ja: {
+    heroEyebrow: "日本製・正規輸入品",
+    heroTitle: "すべての商品にJANコードで確認可能",
+    heroCta: "本物の確認方法を見る",
+    onSaleTag: "キャンペーン中",
+    newTag: "今週の新着商品",
+    b1t: "正規輸入品", b1: "JANコード・届出番号を確認可能",
+    b2t: "市内配送が早い", b2: "ホーチミン市内1〜2日",
+    b3t: "Zaloでご注文", b3: "オンライン決済なし",
+    b4t: "不良品交換", b4: "受取後7日以内",
+    categoriesTitle: "カテゴリー",
+    groups: (n: number) => `${n}カテゴリー`,
+    productsCount: (n: number) => `${n}件の商品`,
+    featuredTitle: "おすすめ商品",
+    seeByCategory: "カテゴリーから見る →",
+    onSaleTitle: "キャンペーン中",
+    seeAllPromo: "キャンペーン一覧を見る →",
+    aboutEyebrow: (name: string) => `${name}について`,
+    aboutTitle: "日本製化粧品、産地を確認できる",
+    aboutCta: "会社概要を見る",
+    newArrivalsTitle: "新着商品",
+    updated: "最新の更新",
+    verifyTitle: "本物かどうか自分で確認する方法",
+    steps: [
+      { h: "箱のJANコードをスキャン", p: "バーコード下の13桁のコードが商品ページの番号と一致している必要があります。番号が違う場合は別ロットの商品です。" },
+      { h: "届出番号を確認", p: "正規輸入品には必ず化粧品届出番号があり、薬務管理局のポータルで確認できます。" },
+      { h: "ロット番号と使用期限を確認", p: "ロット番号は箱底に刻印されており、シールではありません。到着時点で使用期限が最低12ヶ月残っている必要があります。" },
+    ],
+    ctaTitle: "商品選びのご相談",
+    ctaBody: "肌タイプに合った商品選びはZaloでご相談ください — 営業時間内に返信します。",
+    ctaBtn: "今すぐZaloでチャット",
+    metaTitle: (name: string) => `${name} — 日本製化粧品カタログ`,
+    metaDesc: "正規輸入の日本製化粧品。JANコードと届出番号で確認可能。ご注文はZaloまたはお電話で、市内1〜2日でお届け。",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout
+  locale={locale}
+  title={c.metaTitle(site.name)}
+  description={c.metaDesc}
+  image={showcaseImages[0]?.thumbnail}
+>
+  <section class="campaign">
+    <div class="wrap">
+      <div class="campaign-main">
+        {showcaseImages[0]?.thumbnail && <img src={showcaseImages[0].thumbnail} alt="" />}
+        <div class="cap">
+          <p class="eyebrow">{c.heroEyebrow}</p>
+          <h1>{c.heroTitle}</h1>
+          <a class="cta-primary" href="#verify">{c.heroCta}</a>
+        </div>
+      </div>
+      <div class="campaign-side">
+        <a href={L("/promotions/")}>
+          {onSaleItems[0]?.thumbnail && <img src={onSaleItems[0].thumbnail} alt="" />}
+          <span class="cap">{c.onSaleTag}</span>
+        </a>
+        <a class="b" href="#new-arrivals">
+          {newestItems[0]?.thumbnail && <img src={newestItems[0].thumbnail} alt="" />}
+          <span class="cap">{c.newTag}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="badges">
+    <div class="wrap">
+      <div class="badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span><strong>{c.b1t}</strong>{c.b1}</span>
+      </div>
+      <div class="badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong>{c.b2t}</strong>{c.b2}</span>
+      </div>
+      <div class="badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong>{c.b3t}</strong>{c.b3}</span>
+      </div>
+      <div class="badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span><strong>{c.b4t}</strong>{c.b4}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="categories">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>{c.categoriesTitle}</h2>
+        <p class="eyebrow">{c.groups(categories.length)}</p>
+      </div>
+      <div class="grid">
+        {categoryCards.map((cc) => (
+          <a class="cat-card" href={L(`/categories/${cc.handle}/`)}>
+            {cc.thumbnail && <img src={cc.thumbnail} alt={translateCategoryName(cc.name, locale)} />}
+            <div class="cat-label">
+              <h3>{translateCategoryName(cc.name, locale)}</h3>
+              <p class="data">{c.productsCount(cc.count)}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="featured">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>{c.featuredTitle}</h2>
+        <a class="more" href={L("/categories/trang-điểm/")}>{c.seeByCategory}</a>
+      </div>
+      <div class="grid">
+        {featured.map((item) => (
+          <ProductCard item={item} locale={locale} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {onSaleItems.length > 0 && (
+    <section class="block">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>{c.onSaleTitle}</h2>
+          <a class="more" href={L("/promotions/")}>{c.seeAllPromo}</a>
+        </div>
+        <div class="grid">
+          {onSaleItems.map((item) => (
+            <ProductCard item={item} locale={locale} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="block">
+    <div class="wrap">
+      <div class="promo">
+        {promoImage && <img src={promoImage} alt="" />}
+        <div class="promo-body">
+          <p class="eyebrow" style="color:color-mix(in srgb,#fff 70%,transparent)">{c.aboutEyebrow(site.name)}</p>
+          <h2>{c.aboutTitle}</h2>
+          <p>{site.about}</p>
+          <a class="cta-primary" href={L("/about/")}>{c.aboutCta}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="new-arrivals">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>{c.newArrivalsTitle}</h2>
+        <p class="eyebrow">{c.updated}</p>
+      </div>
+      <div class="grid">
+        {newestItems.map((item) => (
+          <ProductCard item={item} locale={locale} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="verify">
+    <div class="wrap">
+      <div class="sec-head"><h2>{c.verifyTitle}</h2></div>
+      <ol class="steps">
+        {c.steps.map((s, i) => (
+          <li>
+            <span class="n">{String(i + 1).padStart(2, "0")}</span>
+            <h3>{s.h}</h3>
+            <p>{s.p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta-band">
+        <div>
+          <h2>{c.ctaTitle}</h2>
+          <p>{c.ctaBody}</p>
+        </div>
+        <a class="cta-primary" href={site.zaloUrl} target="_blank" rel="noopener">{c.ctaBtn}</a>
+      </div>
+    </div>
+  </section>
+</Layout>

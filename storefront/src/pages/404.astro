@@ -1,20 +1,4 @@
 ---
-import Layout from "../components/Layout.astro";
-import { site } from "../lib/site";
+import NotFoundPage from "../components/pages/NotFoundPage.astro";
 ---
-
-<Layout title={`Không tìm thấy trang — ${site.name}`} description="Trang bạn tìm không tồn tại hoặc đã bị di chuyển.">
-  <section class="block" style="text-align:center;padding:5rem 0">
-    <div class="wrap">
-      <p class="eyebrow">404</p>
-      <h1 style="margin:.5rem 0 1rem">Không tìm thấy trang này</h1>
-      <p style="color:var(--ink-soft);max-width:48ch;margin:0 auto 2rem">
-        Trang bạn đang tìm có thể đã bị xoá hoặc đổi địa chỉ. Hãy thử tìm sản phẩm hoặc quay lại trang chủ.
-      </p>
-      <div class="order" style="justify-content:center">
-        <a class="btn-main" href="/">Về trang chủ</a>
-        <a class="btn-alt" href={site.zaloUrl} target="_blank" rel="noopener">Chat Zalo</a>
-      </div>
-    </div>
-  </section>
-</Layout>
+<NotFoundPage locale="vi" />

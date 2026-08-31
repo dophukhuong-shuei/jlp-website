@@ -1,0 +1,137 @@
+---
+import Layout from "../Layout.astro";
+import { site } from "../../lib/site";
+import { localizePath, translateCategoryName, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+
+const COPY = {
+  vi: {
+    metaTitle: `Giới thiệu — ${site.name}`,
+    aboutEyebrow: (name: string) => `Về ${name}`,
+    heroTitle1: "Mỹ phẩm Nhật",
+    heroTitle2: "tra cứu được nguồn gốc.",
+    aboutBody: site.about,
+    contact: "Liên hệ",
+    phone: "Điện thoại",
+    zalo: "Zalo",
+    chatZalo: "Chat qua Zalo",
+    email: "Email",
+    address: "Địa chỉ",
+    hours: "Giờ mở cửa",
+    orderZalo: "Đặt qua Zalo",
+    callBtn: (phone: string) => `Gọi ${phone}`,
+    mapTitle: "Bản đồ chỉ đường",
+    commitment: "Cam kết",
+    commitmentBody:
+      "Mọi sản phẩm nhập chính ngạch, in mã JAN và số phiếu công bố ngay trên trang sản phẩm để khách tự đối chiếu trước khi mua. Website chỉ trưng bày — đơn hàng chốt và thanh toán trực tiếp qua Zalo hoặc điện thoại, không thu tiền qua website.",
+    categoriesTitle: "Danh mục sản phẩm",
+  },
+  en: {
+    metaTitle: `About — ${site.name}`,
+    aboutEyebrow: (name: string) => `About ${name}`,
+    heroTitle1: "Japanese cosmetics,",
+    heroTitle2: "with traceable origin.",
+    aboutBody:
+      "JLP Vietnam specializes in distributing genuine Japanese domestic cosmetics, officially imported. Every product listed lets you verify its JAN code, batch code, and cosmetic license number — you check for yourself, no need to just take our word for it.",
+    contact: "Contact",
+    phone: "Phone",
+    zalo: "Zalo",
+    chatZalo: "Chat on Zalo",
+    email: "Email",
+    address: "Address",
+    hours: "Business hours",
+    orderZalo: "Order via Zalo",
+    callBtn: (phone: string) => `Call ${phone}`,
+    mapTitle: "Map directions",
+    commitment: "Our commitment",
+    commitmentBody:
+      "Every product is officially imported, with its JAN code and license number printed right on the product page so you can verify it yourself before buying. This site only showcases products — orders are confirmed and paid for directly via Zalo or phone, never through the website.",
+    categoriesTitle: "Product categories",
+  },
+  ja: {
+    metaTitle: `会社概要 — ${site.name}`,
+    aboutEyebrow: (name: string) => `${name}について`,
+    heroTitle1: "日本製化粧品、",
+    heroTitle2: "産地を確認できる。",
+    aboutBody:
+      "JLPベトナムは、正規輸入の日本製化粧品の販売を専門としています。掲載しているすべての商品はJANコード、ロット番号、化粧品届出番号をご自身で確認いただけます — 当店の説明を鵜呑みにする必要はありません。",
+    contact: "お問い合わせ",
+    phone: "電話番号",
+    zalo: "Zalo",
+    chatZalo: "Zaloでチャット",
+    email: "メール",
+    address: "住所",
+    hours: "営業時間",
+    orderZalo: "Zaloで注文",
+    callBtn: (phone: string) => `${phone} に電話`,
+    mapTitle: "地図・行き方",
+    commitment: "私たちの約束",
+    commitmentBody:
+      "すべての商品は正規輸入品で、商品ページにJANコードと届出番号を掲載し、購入前にご自身で確認いただけます。本サイトは商品展示のみで、ご注文とお支払いはZaloまたはお電話で直接行い、サイト上での決済はありません。",
+    categoriesTitle: "商品カテゴリー",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout locale={locale} title={c.metaTitle} description={c.aboutBody}>
+  <section class="hero">
+    <div class="wrap inner">
+      <p class="eyebrow">{c.aboutEyebrow(site.name)}</p>
+      <h1>{c.heroTitle1}<br /><em>{c.heroTitle2}</em></h1>
+      <p class="lede">{c.aboutBody}</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><h2>{c.contact}</h2></div>
+      <div class="detail" style="grid-template-columns:1fr 1fr">
+        <div>
+          <dl class="fields" style="flex-direction:column;gap:.6rem;font-size:var(--t-sm)">
+            <div class="field"><dt>{c.phone}</dt><dd><a class="data" href={site.phoneHref}>{site.phone}</a></dd></div>
+            <div class="field"><dt>{c.zalo}</dt><dd><a class="data" href={site.zaloUrl} target="_blank" rel="noopener">{c.chatZalo}</a></dd></div>
+            <div class="field"><dt>{c.email}</dt><dd><a class="data" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+            <div class="field"><dt>{c.address}</dt><dd>{site.address}</dd></div>
+            <div class="field"><dt>{c.hours}</dt><dd>{site.hours}</dd></div>
+          </dl>
+          <div class="order" style="margin-top:1.5rem">
+            <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">{c.orderZalo}</a>
+            <a class="btn-alt" href={site.phoneHref}>{c.callBtn(site.phone)}</a>
+          </div>
+          <iframe
+            title={c.mapTitle}
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`}
+            width="100%"
+            height="260"
+            style="border:0;border-radius:var(--radius);margin-top:1.5rem"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+        <div>
+          <p class="eyebrow brand">{c.commitment}</p>
+          <p style="color:var(--ink-soft)">
+            {c.commitmentBody}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><h2>{c.categoriesTitle}</h2></div>
+      <ol class="steps">
+        {site.categories.map((cat) => (
+          <li><h3>{translateCategoryName(cat, locale)}</h3></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Layout>

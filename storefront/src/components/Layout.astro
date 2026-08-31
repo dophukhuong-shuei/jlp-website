@@ -2,34 +2,34 @@
 import "../styles/global.css";
 import { site } from "../lib/site";
 import { getCategories } from "../lib/medusa";
+import { locales, localizePath, stripLocalePrefix, t, translateCategoryName, categoryIcon, type Locale } from "../i18n";
 
 interface Props {
   title: string;
   description?: string;
-  image?: string;
+  image?: string | null;
+  locale?: Locale;
 }
-const { title, description = site.tagline, image } = Astro.props;
+const { title, description = site.tagline, image, locale = "vi" as Locale } = Astro.props;
+const dict = t(locale);
 const categories = await getCategories();
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://example.com");
 const gaId = import.meta.env.PUBLIC_GA_ID as string | undefined;
-
-const CAT_ICONS: Record<string, string> = {
-  "Dưỡng da": "🧴",
-  "Chống nắng": "☀️",
-  "Tẩy trang": "🧼",
-  "Trang điểm": "💄",
-  "Dưỡng thể": "🧖",
-  "Chăm sóc tóc": "💇",
-};
+const basePath = stripLocalePrefix(Astro.url.pathname);
+const alternates = locales.map((l) => ({ locale: l, href: localizePath(l, basePath) }));
 ---
 
-<html lang="vi">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {alternates.map((a) => (
+      <link rel="alternate" hreflang={a.locale} href={new URL(a.href, canonicalUrl.origin)} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL(localizePath("vi", basePath), canonicalUrl.origin)} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
@@ -65,16 +65,6 @@ const CAT_ICONS: Record<string, string> = {
         const theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         if (theme === "dark") document.documentElement.dataset.theme = "dark";
       })();
-
-      // Mặc định hiển thị tiếng Nhật cho khách lần đầu vào site (chưa từng chọn ngôn ngữ).
-      // Khách vẫn đổi được sang VI/EN qua dropdown — lựa chọn đó sẽ được nhớ cho lần sau.
-      (function () {
-        const hasChosenLang = document.cookie.indexOf("googtrans=") !== -1;
-        if (!hasChosenLang) {
-          document.cookie = "googtrans=/vi/ja; path=/;";
-          document.cookie = "googtrans=/vi/ja; path=/; domain=" + location.hostname + ";";
-        }
-      })();
     </script>
     {gaId && (
       <>
@@ -91,35 +81,35 @@ const CAT_ICONS: Record<string, string> = {
   <body>
     <div class="utility">
       <div class="wrap">
-        <span>📞 Hotline {site.phone}</span>
-        <span>Giao 1–2 ngày nội thành · Đổi hàng lỗi trong 7 ngày</span>
+        <span>📞 {dict.hotline} {site.phone}</span>
+        <span>{dict.deliveryNote}</span>
       </div>
     </div>
 
     <header class="hdr">
       <div class="wrap bar">
-        <a class="logo" href="/"><span class="mark">{site.name}</span><span class="ja">{site.nameJa}</span></a>
+        <a class="logo" href={localizePath(locale, "/")}><span class="mark">{site.name}</span><span class="ja">{site.nameJa}</span></a>
 
         <div class="search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <input type="text" id="site-search" placeholder="Tìm sản phẩm..." autocomplete="off" />
+          <input type="text" id="site-search" placeholder={dict.searchPlaceholder} autocomplete="off" data-locale={locale} data-search-empty={dict.searchEmpty("{q}")} />
           <div id="search-results" class="search-results" hidden></div>
         </div>
 
         <div class="hdr-tools">
           <div class="lang-switch">
-            <button type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false">🌐 <span id="lang-current">VI</span></button>
+            <button type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false">🌐 <span id="lang-current">{locale.toUpperCase()}</span></button>
             <ul id="lang-menu" hidden>
-              <li><button type="button" data-lang="vi">Tiếng Việt</button></li>
-              <li><button type="button" data-lang="en">English</button></li>
-              <li><button type="button" data-lang="ja">日本語</button></li>
+              <li><a href={localizePath("vi", basePath)} aria-current={locale === "vi" ? "true" : undefined}>Tiếng Việt</a></li>
+              <li><a href={localizePath("en", basePath)} aria-current={locale === "en" ? "true" : undefined}>English</a></li>
+              <li><a href={localizePath("ja", basePath)} aria-current={locale === "ja" ? "true" : undefined}>日本語</a></li>
             </ul>
           </div>
-          <button type="button" id="theme-toggle" aria-label="Chuyển giao diện sáng/tối">
+          <button type="button" id="theme-toggle" aria-label={dict.themeToggle}>
             <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" hidden><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
-          <a class="hdr-cta" href={site.zaloUrl} target="_blank" rel="noopener">Chat Zalo</a>
+          <a class="hdr-cta" href={site.zaloUrl} target="_blank" rel="noopener">{dict.chatZalo}</a>
         </div>
       </div>
     </header>
@@ -127,15 +117,12 @@ const CAT_ICONS: Record<string, string> = {
     <nav class="catstrip">
       <div class="wrap">
         {categories.map((c) => (
-          <a href={`/categories/${c.handle}/`}><span class="ic">{CAT_ICONS[c.name] ?? "🏷️"}</span>{c.name}</a>
+          <a href={localizePath(locale, `/categories/${c.handle}/`)}><span class="ic">{categoryIcon(c.name)}</span>{translateCategoryName(c.name, locale)}</a>
         ))}
-        <a href="/promotions/"><span class="ic">🎁</span>Khuyến mãi</a>
-        <a href="/#new-arrivals"><span class="ic">✨</span>Hàng mới</a>
+        <a href={localizePath(locale, "/promotions/")}><span class="ic">🎁</span>{dict.promotions}</a>
+        <a href={`${localizePath(locale, "/")}#new-arrivals`}><span class="ic">✨</span>{dict.newArrivals}</a>
       </div>
     </nav>
-
-    <!-- Google Website Translator — widget ẩn UI gốc, điều khiển qua dropdown tuỳ biến ở trên -->
-    <div id="google_translate_element" style="display:none"></div>
 
     <main>
       <slot />
@@ -144,50 +131,49 @@ const CAT_ICONS: Record<string, string> = {
     <footer class="ftr">
       <div class="wrap cols">
         <div>
-          <p class="eyebrow">Liên hệ</p>
+          <p class="eyebrow">{dict.contact}</p>
           <p>{site.phone}<br />{site.email}</p>
           <p class="note">{site.address}<br />{site.hours}</p>
         </div>
         <div>
-          <p class="eyebrow">Danh mục</p>
+          <p class="eyebrow">{dict.categoriesLabel}</p>
           <p class="note">
             {categories.map((c, i) => (
               <>
-                <a href={`/categories/${c.handle}/`}>{c.name}</a>
+                <a href={localizePath(locale, `/categories/${c.handle}/`)}>{translateCategoryName(c.name, locale)}</a>
                 {i < categories.length - 1 ? " · " : ""}
               </>
             ))}
           </p>
         </div>
         <div>
-          <p class="eyebrow">Về hàng hoá</p>
+          <p class="eyebrow">{dict.aboutGoods}</p>
           <p class="note">
-            Mọi sản phẩm đều hiển thị mã JAN và số phiếu công bố sản phẩm mỹ phẩm. Bạn có thể quét mã vạch hoặc tra
-            số công bố trên cổng thông tin của Cục Quản lý Dược để tự đối chiếu trước khi đặt.
-            <br /><a href="/about/">Xem trang giới thiệu →</a>
+            {dict.aboutGoodsBody}
+            <br /><a href={localizePath(locale, "/about/")}>{dict.aboutGoodsLink}</a>
           </p>
         </div>
       </div>
       <div class="wrap fine data">
-        <span>© {new Date().getFullYear()} {site.name}</span>
-        <span>Website trưng bày sản phẩm — đặt hàng qua Zalo hoặc điện thoại</span>
-        <span><a href="/faq/">Câu hỏi thường gặp</a> · <a href="/privacy-policy/">Chính sách bảo mật</a></span>
+        <span>{dict.footerCopyright(new Date().getFullYear())} {site.name}</span>
+        <span>{dict.footerShowcaseNote}</span>
+        <span><a href={localizePath(locale, "/faq/")}>{dict.faq}</a> · <a href={localizePath(locale, "/privacy-policy/")}>{dict.privacyPolicy}</a></span>
       </div>
     </footer>
 
     <div class="dock">
-      <span class="response-promise">Phản hồi trong ~15 phút giờ hành chính</span>
-      <a class="z" href={site.zaloUrl} target="_blank" rel="noopener">Chat Zalo</a>
+      <span class="response-promise">{dict.responsePromise}</span>
+      <a class="z" href={site.zaloUrl} target="_blank" rel="noopener">{dict.chatZalo}</a>
       <a class="c" href={site.phoneHref}>{site.phone}</a>
     </div>
 
     <nav class="mnav">
       <div class="wrap row">
-        <a href="/"><span class="icn">🏠</span>Trang chủ</a>
-        <a href="/#categories"><span class="icn">📂</span>Danh mục</a>
-        <a href="/promotions/"><span class="icn">🎁</span>Khuyến mãi</a>
+        <a href={localizePath(locale, "/")}><span class="icn">🏠</span>{dict.home}</a>
+        <a href={`${localizePath(locale, "/")}#categories`}><span class="icn">📂</span>{dict.categories}</a>
+        <a href={localizePath(locale, "/promotions/")}><span class="icn">🎁</span>{dict.promotions}</a>
         <a href={site.zaloUrl} target="_blank" rel="noopener"><span class="icn">💬</span>Zalo</a>
-        <a href="/about/"><span class="icn">ℹ️</span>Giới thiệu</a>
+        <a href={localizePath(locale, "/about/")}><span class="icn">ℹ️</span>{dict.about}</a>
       </div>
     </nav>
 
@@ -226,11 +212,13 @@ const CAT_ICONS: Record<string, string> = {
         });
       })();
 
-      // Tìm kiếm sản phẩm — tải index tĩnh 1 lần, lọc theo tên ngay trên client (site tĩnh, không có API runtime)
+      // Tìm kiếm sản phẩm — tải index tĩnh 1 lần (theo locale hiện tại), lọc theo tên ngay trên client
       (function () {
         const input = document.getElementById("site-search");
         const results = document.getElementById("search-results");
         if (!input) return;
+        const locale = input.dataset.locale || "vi";
+        const indexUrl = locale === "vi" ? "/search-index.json" : "/" + locale + "/search-index.json";
         let index = null;
         let loading = null;
 
@@ -240,16 +228,19 @@ const CAT_ICONS: Record<string, string> = {
           return new Intl.NumberFormat("vi-VN", { style: "currency", currency: currency.toUpperCase() }).format(amount);
         }
 
+        const searchEmptyText = input.dataset.searchEmpty || 'No results for "{q}".';
+        const productPrefix = locale === "vi" ? "/products/" : "/" + locale + "/products/";
+
         function render(items, query) {
           if (items.length === 0) {
-            results.innerHTML = '<p class="search-empty">Không tìm thấy "' + query + '".</p>';
+            results.innerHTML = '<p class="search-empty">' + searchEmptyText.replace("{q}", query) + "</p>";
           } else {
             results.innerHTML = items
               .slice(0, 8)
               .map(function (p) {
                 const thumb = p.thumbnail ? '<img src="' + p.thumbnail + '" alt="" />' : "<span></span>";
                 return (
-                  '<a href="/products/' + p.handle + '/">' + thumb + "<span>" + p.title + "</span>" +
+                  '<a href="' + productPrefix + p.handle + '/">' + thumb + "<span>" + p.title + "</span>" +
                   '<span class="price">' + fmtPrice(p.price, p.currency) + "</span></a>"
                 );
               })
@@ -265,7 +256,7 @@ const CAT_ICONS: Record<string, string> = {
             return;
           }
           if (!index) {
-            if (!loading) loading = fetch("/search-index.json").then(function (r) { return r.json(); });
+            if (!loading) loading = fetch(indexUrl).then(function (r) { return r.json(); });
             loading.then(function (data) {
               index = data;
               render(
@@ -285,15 +276,10 @@ const CAT_ICONS: Record<string, string> = {
         });
       })();
 
-      // Đổi ngôn ngữ — đọc cookie googtrans hiện tại để hiện đúng lựa chọn đang chọn
+      // Dropdown chọn ngôn ngữ — chỉ toggle hiển thị, các item giờ là <a href> thật (không JS-driven nữa)
       (function () {
         const btn = document.getElementById("lang-btn");
         const menu = document.getElementById("lang-menu");
-        const current = document.getElementById("lang-current");
-        const match = document.cookie.match(/googtrans=\/vi\/(\w+)/);
-        const activeLang = match ? match[1] : "vi";
-        current.textContent = activeLang.toUpperCase();
-
         btn.addEventListener("click", function () {
           const open = !menu.hidden;
           menu.hidden = open;
@@ -302,31 +288,7 @@ const CAT_ICONS: Record<string, string> = {
         document.addEventListener("click", function (e) {
           if (!menu.contains(e.target) && e.target !== btn) menu.hidden = true;
         });
-        menu.querySelectorAll("button[data-lang]").forEach(function (item) {
-          item.addEventListener("click", function () {
-            const lang = item.dataset.lang;
-            const domain = location.hostname;
-            if (lang === "vi") {
-              document.cookie = "googtrans=/vi/vi; path=/;";
-              document.cookie = "googtrans=/vi/vi; path=/; domain=" + domain + ";";
-            } else {
-              document.cookie = "googtrans=/vi/" + lang + "; path=/;";
-              document.cookie = "googtrans=/vi/" + lang + "; path=/; domain=" + domain + ";";
-            }
-            location.reload();
-          });
-        });
       })();
     </script>
-
-    <script is:inline>
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement(
-          { pageLanguage: "vi", includedLanguages: "en,ja", autoDisplay: false },
-          "google_translate_element",
-        );
-      }
-    </script>
-    <script is:inline src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   </body>
 </html>

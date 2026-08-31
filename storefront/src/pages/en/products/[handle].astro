@@ -1,0 +1,15 @@
+---
+import ProductPage from "../../../components/pages/ProductPage.astro";
+import { getAllProducts, toCatalogItem } from "../../../lib/medusa";
+
+export async function getStaticPaths() {
+  const products = await getAllProducts();
+  return products.map((product) => ({
+    params: { handle: product.handle },
+    props: { item: toCatalogItem(product, "en") },
+  }));
+}
+
+const { item } = Astro.props;
+---
+<ProductPage item={item} locale="en" />

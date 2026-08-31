@@ -1,0 +1,201 @@
+---
+import Layout from "../Layout.astro";
+import ProductCard from "../ProductCard.astro";
+import Breadcrumbs from "../Breadcrumbs.astro";
+import { getAllProducts, toCatalogItem, type MedusaCategory } from "../../lib/medusa";
+import { site } from "../../lib/site";
+import { localizePath, translateCategoryName, type Locale } from "../../i18n";
+
+interface Props {
+  category: MedusaCategory;
+  locale: Locale;
+}
+const { category, locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+const categoryName = translateCategoryName(category.name, locale);
+
+const products = await getAllProducts({ categoryId: category.id });
+const items = products.map((p) => toCatalogItem(p, locale));
+
+const prices = items.map((i) => i.price).filter((p): p is number => p != null);
+const minPrice = prices.length ? Math.min(...prices) : 0;
+const maxPrice = prices.length ? Math.max(...prices) : 0;
+
+const COPY = {
+  vi: {
+    home: "Trang chủ",
+    productsCount: (n: number) => `${n} sản phẩm`,
+    empty: "Chưa có sản phẩm trong danh mục này.",
+    sort: "Sắp xếp",
+    sortDefault: "Mặc định",
+    sortPriceAsc: "Giá tăng dần",
+    sortPriceDesc: "Giá giảm dần",
+    priceRange: "Khoảng giá (VND)",
+    onSale: "Đang khuyến mãi",
+    hasGift: "Có tặng kèm",
+    inStock: "Còn hàng",
+    reset: "Xoá lọc",
+    noMatch: "Không có sản phẩm khớp bộ lọc.",
+    metaDesc: (name: string) => `Mua ${name.toLowerCase()} nội địa Nhật chính ngạch — tra được mã JAN, giá tốt, giao 1–2 ngày.`,
+    countSuffix: " sản phẩm",
+  },
+  en: {
+    home: "Home",
+    productsCount: (n: number) => `${n} products`,
+    empty: "No products in this category yet.",
+    sort: "Sort",
+    sortDefault: "Default",
+    sortPriceAsc: "Price: low to high",
+    sortPriceDesc: "Price: high to low",
+    priceRange: "Price range (VND)",
+    onSale: "On sale",
+    hasGift: "Free gift",
+    inStock: "In stock",
+    reset: "Clear filters",
+    noMatch: "No products match your filters.",
+    metaDesc: (name: string) => `Shop genuine Japanese domestic ${name.toLowerCase()}, officially imported — verifiable JAN codes, great prices, 1–2 day delivery.`,
+    countSuffix: " products",
+  },
+  ja: {
+    home: "ホーム",
+    productsCount: (n: number) => `${n}件の商品`,
+    empty: "このカテゴリーにはまだ商品がありません。",
+    sort: "並び替え",
+    sortDefault: "デフォルト",
+    sortPriceAsc: "価格が安い順",
+    sortPriceDesc: "価格が高い順",
+    priceRange: "価格帯（VND）",
+    onSale: "キャンペーン中",
+    hasGift: "特典付き",
+    inStock: "在庫あり",
+    reset: "フィルターを解除",
+    noMatch: "条件に一致する商品がありません。",
+    metaDesc: (name: string) => `日本製正規輸入の${name}をお探しなら。JANコードで確認可能、お得な価格、1〜2日でお届け。`,
+    countSuffix: "件の商品",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout
+  locale={locale}
+  title={`${categoryName} — ${site.name}`}
+  description={c.metaDesc(categoryName)}
+>
+  <section class="block">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: c.home, href: L("/") }, { label: categoryName }]} />
+      <div class="sec-head">
+        <h2>{categoryName}</h2>
+        <p class="eyebrow">{c.productsCount(items.length)}</p>
+      </div>
+
+      {items.length === 0 ? (
+        <p style="color:var(--ink-soft)">{c.empty}</p>
+      ) : (
+        <>
+          <form class="filter-bar" id="filter-form">
+            <div class="filter-group">
+              <label for="sort">{c.sort}</label>
+              <select id="sort" name="sort">
+                <option value="default">{c.sortDefault}</option>
+                <option value="price-asc">{c.sortPriceAsc}</option>
+                <option value="price-desc">{c.sortPriceDesc}</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="min-price">{c.priceRange}</label>
+              <div class="price-range">
+                <input type="number" id="min-price" min={minPrice} max={maxPrice} placeholder={String(minPrice)} step="1000" />
+                <span>—</span>
+                <input type="number" id="max-price" min={minPrice} max={maxPrice} placeholder={String(maxPrice)} step="1000" />
+              </div>
+            </div>
+            <div class="filter-group checks">
+              <label class="filter-check"><input type="checkbox" id="only-sale" /> {c.onSale}</label>
+              <label class="filter-check"><input type="checkbox" id="only-gift" /> {c.hasGift}</label>
+              <label class="filter-check"><input type="checkbox" id="only-instock" /> {c.inStock}</label>
+            </div>
+            <button type="button" class="filter-reset" id="filter-reset">{c.reset}</button>
+          </form>
+
+          <p class="data" id="filter-count" data-suffix={c.countSuffix} style="color:var(--ink-faint);margin:0 0 1rem">{items.length}{c.countSuffix}</p>
+
+          <div class="grid" id="product-grid">
+            {items.map((item) => (
+              <ProductCard item={item} locale={locale} />
+            ))}
+          </div>
+          <p class="filter-empty" id="filter-empty" hidden>{c.noMatch}</p>
+        </>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById("filter-form");
+  if (form) {
+    const grid = document.getElementById("product-grid")!;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
+    const countEl = document.getElementById("filter-count")!;
+    const suffix = countEl.dataset.suffix || "";
+    const emptyEl = document.getElementById("filter-empty")!;
+    const sortEl = document.getElementById("sort") as HTMLSelectElement;
+    const minEl = document.getElementById("min-price") as HTMLInputElement;
+    const maxEl = document.getElementById("max-price") as HTMLInputElement;
+    const saleEl = document.getElementById("only-sale") as HTMLInputElement;
+    const giftEl = document.getElementById("only-gift") as HTMLInputElement;
+    const stockEl = document.getElementById("only-instock") as HTMLInputElement;
+    const resetBtn = document.getElementById("filter-reset")!;
+
+    function apply() {
+      const min = minEl.value ? Number(minEl.value) : null;
+      const max = maxEl.value ? Number(maxEl.value) : null;
+      let visible = 0;
+
+      for (const card of cards) {
+        const price = Number(card.dataset.price || 0);
+        const onSale = card.dataset.onsale === "1";
+        const hasGift = card.dataset.gift === "1";
+        const inStock = card.dataset.instock === "1";
+
+        let ok = true;
+        if (min != null && price < min) ok = false;
+        if (max != null && price > max) ok = false;
+        if (saleEl.checked && !onSale) ok = false;
+        if (giftEl.checked && !hasGift) ok = false;
+        if (stockEl.checked && !inStock) ok = false;
+
+        card.hidden = !ok;
+        if (ok) visible++;
+      }
+
+      if (sortEl.value !== "default") {
+        const sorted = [...cards].sort((a, b) => {
+          const pa = Number(a.dataset.price || 0);
+          const pb = Number(b.dataset.price || 0);
+          return sortEl.value === "price-asc" ? pa - pb : pb - pa;
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+
+      countEl.textContent = `${visible}${suffix}`;
+      emptyEl.hidden = visible !== 0;
+    }
+
+    for (const el of [sortEl, minEl, maxEl, saleEl, giftEl, stockEl]) {
+      el.addEventListener("input", apply);
+      el.addEventListener("change", apply);
+    }
+    resetBtn.addEventListener("click", () => {
+      sortEl.value = "default";
+      minEl.value = "";
+      maxEl.value = "";
+      saleEl.checked = false;
+      giftEl.checked = false;
+      stockEl.checked = false;
+      apply();
+    });
+  }
+</script>

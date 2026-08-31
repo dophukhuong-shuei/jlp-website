@@ -1,94 +1,15 @@
 ---
-import Layout from "../../components/Layout.astro";
-import LabelStrip from "../../components/LabelStrip.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ProductPage from "../../components/pages/ProductPage.astro";
 import { getAllProducts, toCatalogItem } from "../../lib/medusa";
-import { boxSvg, formatPrice, placeholderBg } from "../../lib/format";
-import { site } from "../../lib/site";
 
 export async function getStaticPaths() {
   const products = await getAllProducts();
   return products.map((product) => ({
     params: { handle: product.handle },
-    props: { item: toCatalogItem(product) },
+    props: { item: toCatalogItem(product, "vi") },
   }));
 }
 
 const { item } = Astro.props;
-const discountPct =
-  item.wasPrice && item.price ? Math.round((1 - item.price / item.wasPrice) * 100) : null;
-const category = item.categories[0];
-const description = item.brand
-  ? `${item.title} — ${item.brand}, hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`
-  : `${item.title} — hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`;
 ---
-
-<Layout title={`${item.title} — ${site.name}`} description={description} image={item.thumbnail}>
-  <section class="block">
-    <div class="wrap">
-      <Breadcrumbs
-        items={[
-          { label: "Trang chủ", href: "/" },
-          ...(category ? [{ label: category.name, href: `/categories/${category.handle}/` }] : []),
-          { label: item.title },
-        ]}
-      />
-      <a class="back" href="/">← Danh sách sản phẩm</a>
-      <div class="detail">
-        <figure class="mainimg">
-          {
-            item.thumbnail ? (
-              <img src={item.thumbnail} alt={item.title} />
-            ) : (
-              <Fragment set:html={boxSvg(placeholderBg(item.id))} />
-            )
-          }
-          {item.ja && <span class="ja">{item.ja}</span>}
-        </figure>
-        <div class="info">
-          {item.brand && (
-            <p class="eyebrow brand">
-              {item.brand} {item.ja && <span style="color:var(--ink-faint)">{item.ja}</span>}
-            </p>
-          )}
-          <h2>{item.title}</h2>
-          {item.description && <p style="color:var(--ink-soft);margin:0 0 1.25rem">{item.description}</p>}
-          <div class="prices">
-            {item.price != null && <span class="price now">{formatPrice(item.price, item.currency)}</span>}
-            {item.wasPrice != null && <s class="was">{formatPrice(item.wasPrice, item.currency)}</s>}
-            {discountPct && <span class="off">−{discountPct}%</span>}
-          </div>
-          <p class="stock">
-            {item.inStock ? "Còn hàng, giao trong 1–2 ngày ở TP.HCM" : "Tạm hết hàng"}
-          </p>
-          <div class="order">
-            <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">Đặt qua Zalo</a>
-            <a class="btn-alt" href={site.phoneHref}>Gọi {site.phone}</a>
-          </div>
-          <p class="order-note">
-            Website chỉ trưng bày, không thanh toán online. Bạn chốt đơn và chọn cách trả tiền trực tiếp với shop
-            qua Zalo.
-          </p>
-          <LabelStrip item={item} full />
-          {item.skinTypes.length > 0 && (
-            <div class="chips">
-              {item.skinTypes.map((s) => (
-                <span class="chip">{s}</span>
-              ))}
-            </div>
-          )}
-          {item.attributes.length > 0 && (
-            <dl class="fields" style="margin-top:1rem;flex-direction:column;gap:.4rem">
-              {item.attributes.map((a) => (
-                <div class="field">
-                  <dt>{a.name}</dt>
-                  <dd>{a.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </div>
-      </div>
-    </div>
-  </section>
-</Layout>
+<ProductPage item={item} locale="vi" />

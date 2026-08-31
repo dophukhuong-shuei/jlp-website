@@ -1,4 +1,5 @@
 import Medusa from "@medusajs/js-sdk";
+import type { Locale } from "../i18n";
 
 // Site không bán online — chỉ dùng Medusa như nguồn dữ liệu catalog
 // (đọc ở build time để sinh trang tĩnh). Không gọi API lúc runtime trên client.
@@ -115,11 +116,19 @@ export type CatalogItem = {
   attributes: { name: string; value: string }[];
 };
 
-export function toCatalogItem(product: MedusaProduct): CatalogItem {
+export function toCatalogItem(product: MedusaProduct, locale: Locale = "vi"): CatalogItem {
   const meta = (product.metadata ?? {}) as Record<string, unknown>;
   const str = (key: string): string | null => {
     const v = meta[key];
     return typeof v === "string" && v.length > 0 ? v : null;
+  };
+  // Field dịch (title, description, gift...): thử metadata "<key>_<locale>", rơi về "<key>" (tiếng Việt gốc) nếu thiếu.
+  const localized = (key: string): string | null => {
+    if (locale !== "vi") {
+      const v = str(`${key}_${locale}`);
+      if (v) return v;
+    }
+    return str(key);
   };
   const variant = product.variants?.[0];
   const price = variant?.calculated_price;
@@ -131,11 +140,15 @@ export function toCatalogItem(product: MedusaProduct): CatalogItem {
   const wasPrice =
     metaOriginalPrice && calculatedAmount && metaOriginalPrice > calculatedAmount ? metaOriginalPrice : null;
 
+  // title/description là field core Medusa (không phải metadata) — bản dịch lưu ở metadata title_en/title_ja...
+  const titleOverride = locale !== "vi" ? str(`title_${locale}`) : null;
+  const descriptionOverride = locale !== "vi" ? str(`description_${locale}`) : null;
+
   return {
     id: product.id,
     handle: product.handle,
-    title: product.title,
-    description: product.description,
+    title: titleOverride ?? product.title,
+    description: descriptionOverride ?? product.description,
     thumbnail: product.thumbnail,
     brand: str("brand"),
     ja: str("ja"),
@@ -147,14 +160,14 @@ export function toCatalogItem(product: MedusaProduct): CatalogItem {
     price: calculatedAmount,
     wasPrice,
     onSale: wasPrice != null,
-    gift: str("gift"),
+    gift: localized("gift"),
     currency: price?.currency_code ?? "vnd",
     inStock: (variant as { inventory_quantity?: number } | undefined)?.inventory_quantity !== 0,
     categories: product.categories ?? [],
     createdAt: product.created_at,
-    skinTypes: str("skin_type")?.split(",").filter(Boolean) ?? [],
+    skinTypes: localized("skin_type")?.split(",").filter(Boolean) ?? [],
     attributes: (() => {
-      const raw = meta.attributes;
+      const raw = locale !== "vi" ? (meta[`attributes_${locale}`] ?? meta.attributes) : meta.attributes;
       if (typeof raw !== "string" || !raw) return [];
       try {
         return JSON.parse(raw) as { name: string; value: string }[];

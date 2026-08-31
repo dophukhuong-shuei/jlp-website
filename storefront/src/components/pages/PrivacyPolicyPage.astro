@@ -1,0 +1,83 @@
+---
+import Layout from "../Layout.astro";
+import Breadcrumbs from "../Breadcrumbs.astro";
+import { site } from "../../lib/site";
+import { localizePath, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+
+const COPY = {
+  vi: {
+    metaTitle: `Chính sách bảo mật — ${site.name}`,
+    metaDesc: "Chính sách bảo mật thông tin khách hàng của website.",
+    home: "Trang chủ",
+    title: "Chính sách bảo mật",
+    p1: `Website ${site.name} chỉ dùng để trưng bày sản phẩm. Chúng tôi không thu thập thông tin thanh toán qua website — mọi đơn hàng được chốt trực tiếp qua Zalo hoặc điện thoại với đội ngũ tư vấn.`,
+    p2: "Khi bạn liên hệ qua Zalo hoặc điện thoại, thông tin bạn cung cấp (họ tên, số điện thoại, địa chỉ nhận hàng) chỉ được dùng để xử lý đơn hàng và chăm sóc khách hàng, không chia sẻ cho bên thứ ba ngoài mục đích giao nhận hàng.",
+    p3: "Website có thể sử dụng công cụ phân tích lưu lượng truy cập (ví dụ Google Analytics) để cải thiện trải nghiệm người dùng. Dữ liệu này ở dạng tổng hợp, không định danh cá nhân.",
+    p4pre: "Nếu bạn có câu hỏi về việc xử lý thông tin cá nhân, vui lòng liên hệ qua Zalo (",
+    p4mid: ") hoặc gọi",
+    p5: "Nội dung trang này là chính sách bảo mật cơ bản, cần được rà soát bởi bộ phận pháp lý trước khi công bố chính thức nếu công ty triển khai thu thập/lưu trữ thêm dữ liệu khách hàng trong tương lai.",
+  },
+  en: {
+    metaTitle: `Privacy Policy — ${site.name}`,
+    metaDesc: "The site's customer privacy policy.",
+    home: "Home",
+    title: "Privacy policy",
+    p1: `The ${site.name} website is used only to showcase products. We do not collect payment information through the website — every order is confirmed directly with our team via Zalo or phone.`,
+    p2: "When you contact us via Zalo or phone, the information you provide (name, phone number, delivery address) is used only to process your order and for customer support, and is not shared with third parties beyond what's needed for delivery.",
+    p3: "The website may use traffic analytics tools (e.g. Google Analytics) to improve the user experience. This data is aggregated and does not identify you personally.",
+    p4pre: "If you have questions about how your personal information is handled, please contact us via Zalo (",
+    p4mid: ") or call",
+    p5: "This page is a baseline privacy policy and should be reviewed by legal counsel before formal publication if the company begins collecting or storing additional customer data in the future.",
+  },
+  ja: {
+    metaTitle: `プライバシーポリシー — ${site.name}`,
+    metaDesc: "本サイトの顧客情報保護に関する方針です。",
+    home: "ホーム",
+    title: "プライバシーポリシー",
+    p1: `${site.name}のウェブサイトは商品展示のみを目的としています。当サイトでは決済情報を収集しません — すべてのご注文はZaloまたはお電話で担当者と直接確定します。`,
+    p2: "Zaloまたはお電話でご連絡いただく際にご提供いただく情報（氏名、電話番号、配送先住所）は、ご注文の処理およびカスタマーサポートのみに使用し、配送に必要な範囲を超えて第三者と共有することはありません。",
+    p3: "本サイトはユーザー体験向上のため、アクセス解析ツール（Google Analyticsなど）を使用する場合があります。これらのデータは集計されたものであり、個人を特定するものではありません。",
+    p4pre: "個人情報の取り扱いについてご質問がある場合は、Zalo（",
+    p4mid: ")、またはお電話",
+    p5: "本ページは基本的なプライバシーポリシーです。今後、顧客データの収集・保管を追加で行う場合は、正式公開前に法務部門による確認が必要です。",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout
+  locale={locale}
+  title={c.metaTitle}
+  description={c.metaDesc}
+>
+  <section class="block">
+    <div class="wrap" style="max-width:68ch">
+      <Breadcrumbs items={[{ label: c.home, href: L("/") }, { label: c.title }]} />
+      <div class="sec-head"><h2>{c.title}</h2></div>
+      <div style="color:var(--ink-soft);font-size:var(--t-sm);display:flex;flex-direction:column;gap:1rem">
+        <p>
+          {c.p1}
+        </p>
+        <p>
+          {c.p2}
+        </p>
+        <p>
+          {c.p3}
+        </p>
+        <p>
+          {c.p4pre}{site.zaloUrl}{c.p4mid}{" "}
+          {site.phone}.
+        </p>
+        <p style="font-size:var(--t-xs);color:var(--ink-faint)">
+          {c.p5}
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

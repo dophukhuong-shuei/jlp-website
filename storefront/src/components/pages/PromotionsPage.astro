@@ -1,0 +1,174 @@
+---
+import Layout from "../Layout.astro";
+import ProductCard from "../ProductCard.astro";
+import { getAllProducts, toCatalogItem } from "../../lib/medusa";
+import { site } from "../../lib/site";
+import type { Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+
+const products = await getAllProducts();
+const items = products.map((p) => toCatalogItem(p, locale)).filter((i) => i.onSale || i.gift);
+const onSaleCount = items.filter((i) => i.onSale).length;
+const giftCount = items.filter((i) => i.gift).length;
+
+const COPY = {
+  vi: {
+    metaTitle: `Khuyến mãi — ${site.name}`,
+    metaDesc: (n1: number, n2: number) => `${n1} sản phẩm đang giảm giá và ${n2} sản phẩm có tặng kèm — mỹ phẩm nội địa Nhật chính ngạch.`,
+    eyebrow: "Ưu đãi đang chạy",
+    title1: "Khuyến mãi & ",
+    title2: "tặng kèm",
+    lede: (n1: number, n2: number) => `${n1} sản phẩm đang giảm giá, ${n2} sản phẩm có tặng kèm.`,
+    empty: "Hiện chưa có khuyến mãi nào.",
+    sort: "Sắp xếp",
+    sortDefault: "Mặc định",
+    sortPriceAsc: "Giá tăng dần",
+    sortPriceDesc: "Giá giảm dần",
+    onSale: "Đang giảm giá",
+    hasGift: "Có tặng kèm",
+    reset: "Xoá lọc",
+    noMatch: "Không có sản phẩm khớp bộ lọc.",
+    countSuffix: " sản phẩm",
+  },
+  en: {
+    metaTitle: `Promotions — ${site.name}`,
+    metaDesc: (n1: number, n2: number) => `${n1} products on sale and ${n2} products with a free gift — genuine Japanese domestic cosmetics, officially imported.`,
+    eyebrow: "Current offers",
+    title1: "Promotions & ",
+    title2: "free gifts",
+    lede: (n1: number, n2: number) => `${n1} products on sale, ${n2} products with a free gift.`,
+    empty: "No promotions available right now.",
+    sort: "Sort",
+    sortDefault: "Default",
+    sortPriceAsc: "Price: low to high",
+    sortPriceDesc: "Price: high to low",
+    onSale: "On sale",
+    hasGift: "Free gift",
+    reset: "Clear filters",
+    noMatch: "No products match your filters.",
+    countSuffix: " products",
+  },
+  ja: {
+    metaTitle: `キャンペーン — ${site.name}`,
+    metaDesc: (n1: number, n2: number) => `${n1}件の割引商品、${n2}件の特典付き商品 — 日本製正規輸入化粧品。`,
+    eyebrow: "実施中のキャンペーン",
+    title1: "キャンペーン & ",
+    title2: "特典",
+    lede: (n1: number, n2: number) => `${n1}件の割引商品、${n2}件の特典付き商品があります。`,
+    empty: "現在実施中のキャンペーンはありません。",
+    sort: "並び替え",
+    sortDefault: "デフォルト",
+    sortPriceAsc: "価格が安い順",
+    sortPriceDesc: "価格が高い順",
+    onSale: "セール中",
+    hasGift: "特典付き",
+    reset: "フィルターを解除",
+    noMatch: "条件に一致する商品がありません。",
+    countSuffix: "件の商品",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout
+  locale={locale}
+  title={c.metaTitle}
+  description={c.metaDesc(onSaleCount, giftCount)}
+>
+  <section class="hero" style="min-height:220px">
+    <div class="hero-bg"><div class="fallback"></div></div>
+    <div class="wrap hero-grid" style="grid-template-columns:1fr">
+      <div class="inner">
+        <p class="eyebrow">{c.eyebrow}</p>
+        <h1>{c.title1}<em>{c.title2}</em></h1>
+        <p class="lede">{c.lede(onSaleCount, giftCount)}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      {items.length === 0 ? (
+        <p style="color:var(--ink-soft)">{c.empty}</p>
+      ) : (
+        <>
+          <form class="filter-bar" id="filter-form">
+            <div class="filter-group">
+              <label for="sort">{c.sort}</label>
+              <select id="sort" name="sort">
+                <option value="default">{c.sortDefault}</option>
+                <option value="price-asc">{c.sortPriceAsc}</option>
+                <option value="price-desc">{c.sortPriceDesc}</option>
+              </select>
+            </div>
+            <div class="filter-group checks">
+              <label class="filter-check"><input type="checkbox" id="only-sale" /> {c.onSale}</label>
+              <label class="filter-check"><input type="checkbox" id="only-gift" /> {c.hasGift}</label>
+            </div>
+            <button type="button" class="filter-reset" id="filter-reset">{c.reset}</button>
+          </form>
+          <p class="data" id="filter-count" data-suffix={c.countSuffix} style="color:var(--ink-faint);margin:0 0 1rem">{items.length}{c.countSuffix}</p>
+          <div class="grid" id="product-grid">
+            {items.map((item) => (
+              <ProductCard item={item} locale={locale} />
+            ))}
+          </div>
+          <p class="filter-empty" id="filter-empty" hidden>{c.noMatch}</p>
+        </>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById("filter-form");
+  if (form) {
+    const grid = document.getElementById("product-grid")!;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
+    const countEl = document.getElementById("filter-count")!;
+    const suffix = countEl.dataset.suffix || "";
+    const emptyEl = document.getElementById("filter-empty")!;
+    const sortEl = document.getElementById("sort") as HTMLSelectElement;
+    const saleEl = document.getElementById("only-sale") as HTMLInputElement;
+    const giftEl = document.getElementById("only-gift") as HTMLInputElement;
+    const resetBtn = document.getElementById("filter-reset")!;
+
+    function apply() {
+      let visible = 0;
+      for (const card of cards) {
+        const onSale = card.dataset.onsale === "1";
+        const hasGift = card.dataset.gift === "1";
+        let ok = true;
+        if (saleEl.checked && !onSale) ok = false;
+        if (giftEl.checked && !hasGift) ok = false;
+        card.hidden = !ok;
+        if (ok) visible++;
+      }
+      if (sortEl.value !== "default") {
+        const sorted = [...cards].sort((a, b) => {
+          const pa = Number(a.dataset.price || 0);
+          const pb = Number(b.dataset.price || 0);
+          return sortEl.value === "price-asc" ? pa - pb : pb - pa;
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+      countEl.textContent = `${visible}${suffix}`;
+      emptyEl.hidden = visible !== 0;
+    }
+
+    for (const el of [sortEl, saleEl, giftEl]) {
+      el.addEventListener("input", apply);
+      el.addEventListener("change", apply);
+    }
+    resetBtn.addEventListener("click", () => {
+      sortEl.value = "default";
+      saleEl.checked = false;
+      giftEl.checked = false;
+      apply();
+    });
+  }
+</script>

@@ -1,0 +1,124 @@
+---
+import Layout from "../Layout.astro";
+import Breadcrumbs from "../Breadcrumbs.astro";
+import { site } from "../../lib/site";
+import { localizePath, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+
+const FAQS = {
+  vi: [
+    {
+      q: "Làm sao để biết sản phẩm là hàng thật, không phải hàng nhái?",
+      a: "Mỗi sản phẩm trên website đều hiển thị mã JAN và số phiếu công bố mỹ phẩm. Bạn có thể đối chiếu mã JAN với vỏ hộp thực tế, hoặc tra số phiếu công bố trên cổng thông tin của Cục Quản lý Dược trước khi đặt hàng.",
+    },
+    {
+      q: "Đặt hàng như thế nào?",
+      a: `Website chỉ trưng bày sản phẩm, không thanh toán online. Bạn chọn sản phẩm rồi chat Zalo (${site.zaloUrl}) hoặc gọi ${site.phone} để chốt đơn và chọn hình thức thanh toán trực tiếp với shop.`,
+    },
+    {
+      q: "Thời gian giao hàng bao lâu?",
+      a: "Nội thành thường giao trong 1–2 ngày. Các khu vực khác sẽ được tư vấn thời gian cụ thể khi chốt đơn qua Zalo.",
+    },
+    {
+      q: "Có đổi trả được không?",
+      a: "Sản phẩm lỗi do nhà sản xuất được đổi trong vòng 7 ngày kể từ ngày nhận hàng. Vui lòng giữ nguyên bao bì và liên hệ qua Zalo để được hỗ trợ.",
+    },
+    {
+      q: "Tôi không biết loại da của mình phù hợp với sản phẩm nào, có được tư vấn không?",
+      a: "Có. Bạn có thể chat Zalo mô tả loại da và nhu cầu của mình, shop sẽ tư vấn sản phẩm phù hợp trước khi bạn đặt hàng.",
+    },
+  ],
+  en: [
+    {
+      q: "How can I tell a product is genuine and not counterfeit?",
+      a: "Every product on the site shows its JAN code and cosmetic license number. You can compare the JAN code against the physical box, or look up the license number on the Drug Administration's portal before ordering.",
+    },
+    {
+      q: "How do I place an order?",
+      a: `This site only showcases products — there is no online payment. Pick a product, then chat on Zalo (${site.zaloUrl}) or call ${site.phone} to confirm your order and choose a payment method directly with the shop.`,
+    },
+    {
+      q: "How long does delivery take?",
+      a: "Delivery within the city usually takes 1–2 days. For other areas, we'll advise a specific timeframe when you confirm your order via Zalo.",
+    },
+    {
+      q: "Can I exchange or return a product?",
+      a: "Products with a manufacturing defect can be exchanged within 7 days of receipt. Please keep the original packaging and contact us via Zalo for support.",
+    },
+    {
+      q: "I don't know which products suit my skin type — can I get advice?",
+      a: "Yes. Chat with us on Zalo describing your skin type and needs, and we'll recommend suitable products before you order.",
+    },
+  ],
+  ja: [
+    {
+      q: "本物か偽物かどうやって見分けますか？",
+      a: "サイト上のすべての商品にJANコードと化粧品届出番号を表示しています。注文前に実物の箱とJANコードを照合したり、薬務管理局のポータルで届出番号を確認できます。",
+    },
+    {
+      q: "注文方法を教えてください。",
+      a: `本サイトは商品展示のみで、オンライン決済はありません。商品を選んだ後、Zalo（${site.zaloUrl}）でチャットするか、${site.phone} にお電話いただき、注文内容とお支払い方法を店舗と直接ご確認ください。`,
+    },
+    {
+      q: "配送にはどのくらいかかりますか？",
+      a: "市内は通常1〜2日でお届けします。その他の地域はZaloでの注文確定時に具体的な日数をご案内します。",
+    },
+    {
+      q: "交換・返品はできますか？",
+      a: "製造上の不良品は受取後7日以内に交換可能です。パッケージを保管の上、Zaloよりご連絡ください。",
+    },
+    {
+      q: "自分の肌質に合う商品がわかりません。相談できますか？",
+      a: "はい。Zaloで肌質やご要望をお伝えいただければ、ご注文前に適切な商品をご提案します。",
+    },
+  ],
+} as const;
+
+const COPY = {
+  vi: { metaTitle: `Câu hỏi thường gặp — ${site.name}`, metaDesc: "Giải đáp các câu hỏi thường gặp về đặt hàng, giao hàng, đổi trả và cách kiểm tra hàng chính hãng.", home: "Trang chủ", title: "Câu hỏi thường gặp" },
+  en: { metaTitle: `FAQ — ${site.name}`, metaDesc: "Answers to common questions about ordering, delivery, exchanges, and how to verify genuine products.", home: "Home", title: "Frequently asked questions" },
+  ja: { metaTitle: `よくある質問 — ${site.name}`, metaDesc: "ご注文、配送、交換、正規品の確認方法についてよくある質問にお答えします。", home: "ホーム", title: "よくある質問" },
+} as const;
+const c = COPY[locale];
+const faqs = FAQS[locale];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<Layout locale={locale} title={c.metaTitle} description={c.metaDesc}>
+  <section class="block">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: c.home, href: L("/") }, { label: c.title }]} />
+      <div class="sec-head"><h2>{c.title}</h2></div>
+      <div class="faq-list">
+        {faqs.map((f) => (
+          <details class="faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</Layout>
+
+<style>
+  .faq-list { display: flex; flex-direction: column; gap: 0.75rem; max-width: 68ch; }
+  .faq-item { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0.9rem 1.1rem; background: var(--card); }
+  .faq-item summary { cursor: pointer; font-weight: 600; }
+  .faq-item p { margin: 0.6rem 0 0; color: var(--ink-soft); font-size: var(--t-sm); }
+</style>

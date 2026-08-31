@@ -1,6 +1,6 @@
 ---
-import CategoryPage from "../../components/pages/CategoryPage.astro";
-import { getCategories } from "../../lib/medusa";
+import CategoryPage from "../../../components/pages/CategoryPage.astro";
+import { getCategories } from "../../../lib/medusa";
 
 export async function getStaticPaths() {
   const categories = await getCategories();
@@ -12,4 +12,4 @@ export async function getStaticPaths() {
 
 const { category } = Astro.props;
 ---
-<CategoryPage category={category} locale="vi" />
+<CategoryPage category={category} locale="ja" />

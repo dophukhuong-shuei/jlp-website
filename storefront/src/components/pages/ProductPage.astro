@@ -1,0 +1,136 @@
+---
+import Layout from "../Layout.astro";
+import LabelStrip from "../LabelStrip.astro";
+import Breadcrumbs from "../Breadcrumbs.astro";
+import { boxSvg, formatPrice, placeholderBg } from "../../lib/format";
+import { site } from "../../lib/site";
+import type { CatalogItem } from "../../lib/medusa";
+import { localizePath, translateCategoryName, type Locale } from "../../i18n";
+
+interface Props {
+  item: CatalogItem;
+  locale: Locale;
+}
+const { item, locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+
+const discountPct =
+  item.wasPrice && item.price ? Math.round((1 - item.price / item.wasPrice) * 100) : null;
+const category = item.categories[0];
+
+const COPY = {
+  vi: {
+    home: "Trang chủ",
+    back: "← Danh sách sản phẩm",
+    inStock: "Còn hàng, giao trong 1–2 ngày ở TP.HCM",
+    outOfStock: "Tạm hết hàng",
+    orderZalo: "Đặt qua Zalo",
+    callBtn: (phone: string) => `Gọi ${phone}`,
+    orderNote:
+      "Website chỉ trưng bày, không thanh toán online. Bạn chốt đơn và chọn cách trả tiền trực tiếp với shop qua Zalo.",
+    metaDesc: (title: string, brand: string | null) =>
+      brand
+        ? `${title} — ${brand}, hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`
+        : `${title} — hàng nội địa Nhật chính ngạch. Tra được mã JAN và số phiếu công bố trước khi mua.`,
+  },
+  en: {
+    home: "Home",
+    back: "← Product list",
+    inStock: "In stock, delivered in 1–2 days in Ho Chi Minh City",
+    outOfStock: "Temporarily out of stock",
+    orderZalo: "Order via Zalo",
+    callBtn: (phone: string) => `Call ${phone}`,
+    orderNote:
+      "This site only showcases products — no online payment. Confirm your order and choose how to pay directly with the shop via Zalo.",
+    metaDesc: (title: string, brand: string | null) =>
+      brand
+        ? `${title} — ${brand}, genuine Japanese domestic goods, officially imported. Verify the JAN code and license number before you buy.`
+        : `${title} — genuine Japanese domestic goods, officially imported. Verify the JAN code and license number before you buy.`,
+  },
+  ja: {
+    home: "ホーム",
+    back: "← 商品一覧",
+    inStock: "在庫あり、ホーチミン市内1〜2日でお届け",
+    outOfStock: "一時在庫切れ",
+    orderZalo: "Zaloで注文",
+    callBtn: (phone: string) => `${phone} に電話`,
+    orderNote:
+      "本サイトは商品展示のみで、オンライン決済はありません。Zaloで店舗と直接注文内容とお支払い方法をご確認ください。",
+    metaDesc: (title: string, brand: string | null) =>
+      brand
+        ? `${title} — ${brand}、日本製正規輸入品。ご購入前にJANコードと届出番号をご確認いただけます。`
+        : `${title} — 日本製正規輸入品。ご購入前にJANコードと届出番号をご確認いただけます。`,
+  },
+} as const;
+const c = COPY[locale];
+const description = c.metaDesc(item.title, item.brand);
+---
+
+<Layout locale={locale} title={`${item.title} — ${site.name}`} description={description} image={item.thumbnail}>
+  <section class="block">
+    <div class="wrap">
+      <Breadcrumbs
+        items={[
+          { label: c.home, href: L("/") },
+          ...(category ? [{ label: translateCategoryName(category.name, locale), href: L(`/categories/${category.handle}/`) }] : []),
+          { label: item.title },
+        ]}
+      />
+      <a class="back" href={L("/")}>{c.back}</a>
+      <div class="detail">
+        <figure class="mainimg">
+          {
+            item.thumbnail ? (
+              <img src={item.thumbnail} alt={item.title} />
+            ) : (
+              <Fragment set:html={boxSvg(placeholderBg(item.id))} />
+            )
+          }
+          {item.ja && <span class="ja">{item.ja}</span>}
+        </figure>
+        <div class="info">
+          {item.brand && (
+            <p class="eyebrow brand">
+              {item.brand} {item.ja && <span style="color:var(--ink-faint)">{item.ja}</span>}
+            </p>
+          )}
+          <h2>{item.title}</h2>
+          {item.description && <p style="color:var(--ink-soft);margin:0 0 1.25rem">{item.description}</p>}
+          <div class="prices">
+            {item.price != null && <span class="price now">{formatPrice(item.price, item.currency)}</span>}
+            {item.wasPrice != null && <s class="was">{formatPrice(item.wasPrice, item.currency)}</s>}
+            {discountPct && <span class="off">−{discountPct}%</span>}
+          </div>
+          <p class="stock">
+            {item.inStock ? c.inStock : c.outOfStock}
+          </p>
+          <div class="order">
+            <a class="btn-main" href={site.zaloUrl} target="_blank" rel="noopener">{c.orderZalo}</a>
+            <a class="btn-alt" href={site.phoneHref}>{c.callBtn(site.phone)}</a>
+          </div>
+          <p class="order-note">
+            {c.orderNote}
+          </p>
+          <LabelStrip item={item} full locale={locale} />
+          {item.skinTypes.length > 0 && (
+            <div class="chips">
+              {item.skinTypes.map((s) => (
+                <span class="chip">{s}</span>
+              ))}
+            </div>
+          )}
+          {item.attributes.length > 0 && (
+            <dl class="fields" style="margin-top:1rem;flex-direction:column;gap:.4rem">
+              {item.attributes.map((a) => (
+                <div class="field">
+                  <dt>{a.name}</dt>
+                  <dd>{a.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

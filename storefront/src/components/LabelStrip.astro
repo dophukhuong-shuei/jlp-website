@@ -1,12 +1,19 @@
 ---
 import { barcode } from "../lib/format";
 import type { CatalogItem } from "../lib/medusa";
+import type { Locale } from "../i18n";
 
 interface Props {
   item: CatalogItem;
   full?: boolean;
+  locale?: Locale;
 }
-const { item, full = false } = Astro.props;
+const { item, full = false, locale = "vi" as Locale } = Astro.props;
+const L = {
+  vi: { volume: "Dung tích", origin: "Xuất xứ", lot: "Lô", cbmp: "Phiếu công bố" },
+  en: { volume: "Volume", origin: "Origin", lot: "Batch", cbmp: "License no." },
+  ja: { volume: "内容量", origin: "原産地", lot: "ロット", cbmp: "届出番号" },
+}[locale];
 ---
 
 <div class={`strip${full ? " full" : ""}`}>
@@ -16,13 +23,13 @@ const { item, full = false } = Astro.props;
     )
   }
   <dl class="fields">
-    {item.volume && (<div class="field"><dt>Dung tích</dt><dd>{item.volume}</dd></div>)}
-    {item.origin && (<div class="field"><dt>Xuất xứ</dt><dd>{item.origin}</dd></div>)}
+    {item.volume && (<div class="field"><dt>{L.volume}</dt><dd>{item.volume}</dd></div>)}
+    {item.origin && (<div class="field"><dt>{L.origin}</dt><dd>{item.origin}</dd></div>)}
     {item.jan && (<div class="field"><dt>JAN</dt><dd>{item.jan}</dd></div>)}
-    {full && item.lot && (<div class="field"><dt>Lô</dt><dd>{item.lot}</dd></div>)}
+    {full && item.lot && (<div class="field"><dt>{L.lot}</dt><dd>{item.lot}</dd></div>)}
     {full && item.cbmp && (
       <div class="field verified">
-        <dt>Phiếu công bố</dt>
+        <dt>{L.cbmp}</dt>
         <dd>
           <svg viewBox="0 0 16 16" width="11" height="11">
             <path d="M5 8.2l2 2L11.2 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />

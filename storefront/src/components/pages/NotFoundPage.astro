@@ -1,0 +1,55 @@
+---
+import Layout from "../Layout.astro";
+import { site } from "../../lib/site";
+import { localizePath, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localizePath(locale, p);
+
+const COPY = {
+  vi: {
+    metaTitle: `Không tìm thấy trang — ${site.name}`,
+    metaDesc: "Trang bạn tìm không tồn tại hoặc đã bị di chuyển.",
+    title: "Không tìm thấy trang này",
+    body: "Trang bạn đang tìm có thể đã bị xoá hoặc đổi địa chỉ. Hãy thử tìm sản phẩm hoặc quay lại trang chủ.",
+    backHome: "Về trang chủ",
+    chatZalo: "Chat Zalo",
+  },
+  en: {
+    metaTitle: `Page not found — ${site.name}`,
+    metaDesc: "The page you're looking for doesn't exist or has been moved.",
+    title: "This page could not be found",
+    body: "The page you're looking for may have been removed or moved. Try searching for a product or go back home.",
+    backHome: "Back home",
+    chatZalo: "Chat on Zalo",
+  },
+  ja: {
+    metaTitle: `ページが見つかりません — ${site.name}`,
+    metaDesc: "お探しのページは存在しないか、移動しました。",
+    title: "ページが見つかりません",
+    body: "お探しのページは削除または移動された可能性があります。商品を検索するかホームに戻ってください。",
+    backHome: "ホームに戻る",
+    chatZalo: "Zaloでチャット",
+  },
+} as const;
+const c = COPY[locale];
+---
+
+<Layout locale={locale} title={c.metaTitle} description={c.metaDesc}>
+  <section class="block" style="text-align:center;padding:5rem 0">
+    <div class="wrap">
+      <p class="eyebrow">404</p>
+      <h1 style="margin:.5rem 0 1rem">{c.title}</h1>
+      <p style="color:var(--ink-soft);max-width:48ch;margin:0 auto 2rem">
+        {c.body}
+      </p>
+      <div class="order" style="justify-content:center">
+        <a class="btn-main" href={L("/")}>{c.backHome}</a>
+        <a class="btn-alt" href={site.zaloUrl} target="_blank" rel="noopener">{c.chatZalo}</a>
+      </div>
+    </div>
+  </section>
+</Layout>
