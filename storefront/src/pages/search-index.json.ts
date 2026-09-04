@@ -5,7 +5,7 @@ export const prerender = true;
 
 export const GET: APIRoute = async () => {
   const products = await getAllProducts();
-  const items = products.map(toCatalogItem).map((i) => ({
+  const items = products.map((p) => toCatalogItem(p)).map((i) => ({
     title: i.title,
     handle: i.handle,
     thumbnail: i.thumbnail,

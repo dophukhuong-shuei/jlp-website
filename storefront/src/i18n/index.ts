@@ -42,6 +42,9 @@ type Dict = {
   notFoundBody: string;
   backHome: string;
   catalogTagline: string;
+  shopAll: string;
+  beautyTipsTitle: string;
+  beautyTipsEyebrow: string;
 };
 
 const vi: Dict = {
@@ -73,6 +76,9 @@ const vi: Dict = {
   notFoundBody: "Trang bạn đang tìm có thể đã bị xoá hoặc đổi địa chỉ. Hãy thử tìm sản phẩm hoặc quay lại trang chủ.",
   backHome: "Về trang chủ",
   catalogTagline: "Catalog mỹ phẩm Nhật",
+  shopAll: "Xem catalog",
+  beautyTipsTitle: "Hướng dẫn làm đẹp",
+  beautyTipsEyebrow: "Mẹo chăm sóc da",
 };
 
 const en: Dict = {
@@ -104,6 +110,9 @@ const en: Dict = {
   notFoundBody: "The page you're looking for may have been removed or moved. Try searching for a product or go back home.",
   backHome: "Back home",
   catalogTagline: "Japanese cosmetics catalog",
+  shopAll: "Browse catalog",
+  beautyTipsTitle: "Beauty tutorials",
+  beautyTipsEyebrow: "Skincare tips",
 };
 
 const ja: Dict = {
@@ -135,6 +144,9 @@ const ja: Dict = {
   notFoundBody: "お探しのページは削除または移動された可能性があります。商品を検索するかホームに戻ってください。",
   backHome: "ホームに戻る",
   catalogTagline: "日本製化粧品カタログ",
+  shopAll: "カタログを見る",
+  beautyTipsTitle: "美容チュートリアル",
+  beautyTipsEyebrow: "スキンケアのコツ",
 };
 
 const dictionaries: Record<Locale, Dict> = { vi, en, ja };

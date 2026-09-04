@@ -116,11 +116,12 @@ const alternates = locales.map((l) => ({ locale: l, href: localizePath(l, basePa
 
     <nav class="catstrip">
       <div class="wrap">
+        <a href={localizePath(locale, "/shop/")}><span class="ic">🛍️</span>{dict.shopAll}</a>
         {categories.map((c) => (
           <a href={localizePath(locale, `/categories/${c.handle}/`)}><span class="ic">{categoryIcon(c.name)}</span>{translateCategoryName(c.name, locale)}</a>
         ))}
         <a href={localizePath(locale, "/promotions/")}><span class="ic">🎁</span>{dict.promotions}</a>
-        <a href={`${localizePath(locale, "/")}#new-arrivals`}><span class="ic">✨</span>{dict.newArrivals}</a>
+        <a href={`${localizePath(locale, "/shop/")}#new-arrivals`}><span class="ic">✨</span>{dict.newArrivals}</a>
       </div>
     </nav>
 
@@ -170,7 +171,7 @@ const alternates = locales.map((l) => ({ locale: l, href: localizePath(l, basePa
     <nav class="mnav">
       <div class="wrap row">
         <a href={localizePath(locale, "/")}><span class="icn">🏠</span>{dict.home}</a>
-        <a href={`${localizePath(locale, "/")}#categories`}><span class="icn">📂</span>{dict.categories}</a>
+        <a href={`${localizePath(locale, "/shop/")}#categories`}><span class="icn">📂</span>{dict.categories}</a>
         <a href={localizePath(locale, "/promotions/")}><span class="icn">🎁</span>{dict.promotions}</a>
         <a href={site.zaloUrl} target="_blank" rel="noopener"><span class="icn">💬</span>Zalo</a>
         <a href={localizePath(locale, "/about/")}><span class="icn">ℹ️</span>{dict.about}</a>
